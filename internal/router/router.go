@@ -1,8 +1,8 @@
 package router
 
 import (
-	v1 "gin-mini-starter/internal/api/v1"
-	"gin-mini-starter/internal/middleware"
+	v1 "library-sys-go/internal/api/v1"
+	"library-sys-go/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,11 +20,13 @@ func InitRouter() *gin.Engine {
 		// ping
 		api.GET("/ping", v1.Ping)
 	}
-	// Auth
-	api.Use(v1.Auth())
+	// 需要登陆
+	api.Use(middleware.LoginAuthMiddleware())
+	// Reader
 	{
 
 	}
+	// 管理员
 
 	return r
 }

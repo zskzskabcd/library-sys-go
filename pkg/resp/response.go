@@ -2,15 +2,25 @@ package resp
 
 import (
 	"encoding/json"
-	"gin-mini-starter/pkg/encode"
+	"library-sys-go/pkg/encode"
 
 	"github.com/gin-gonic/gin"
+)
+
+// Code
+const (
+	CodeSuccess        = 200
+	CodeParamsInvalid  = 400
+	CodeUnauthorized   = 401
+	CodeForbidden      = 403
+	CodeNotFound       = 404
+	CodeInternalServer = 500
 )
 
 // Success 操作成功返回
 func Success(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code": CodeSuccess,
 		"msg":  "success",
 	})
 }
@@ -18,9 +28,19 @@ func Success(c *gin.Context) {
 // SuccessData 操作成功返回
 func SuccessData(c *gin.Context, data interface{}) {
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code": CodeSuccess,
 		"msg":  "success",
 		"data": data,
+	})
+}
+
+// SuccessList 操作成功返回
+func SuccessList(c *gin.Context, data interface{}, total int64) {
+	c.JSON(200, gin.H{
+		"code":  CodeSuccess,
+		"msg":   "success",
+		"data":  data,
+		"count": total,
 	})
 }
 
@@ -28,7 +48,7 @@ func SuccessData(c *gin.Context, data interface{}) {
 func SuccessDataEncrypt(c *gin.Context, data interface{}) {
 	dataJson, err := json.Marshal(data)
 	if err != nil {
-		Error(c, 500, "数据加密失败")
+		Error(c, CodeInternalServer, "数据加密失败")
 		return
 	}
 	url := c.Request.URL.String()
@@ -36,7 +56,7 @@ func SuccessDataEncrypt(c *gin.Context, data interface{}) {
 	// base64编码
 	//dataBase64 := base64.StdEncoding.EncodeToString(dataEncrypted)
 	c.JSON(200, gin.H{
-		"code":    200,
+		"code":    CodeSuccess,
 		"msg":     "success",
 		"data":    dataEncrypted,
 		"encrypt": true,

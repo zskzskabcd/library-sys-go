@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gin-mini-starter/internal/model"
-	"gin-mini-starter/internal/router"
+	"library-sys-go/internal/model"
+	"library-sys-go/internal/router"
 	"log"
 )
 
@@ -13,8 +13,8 @@ func init() {
 func main() {
 	model.Setup()
 	server := router.InitRouter()
-	log.Println("server run at 8899")
-	err := server.Run(":8899")
+	log.Println("server run at 8761")
+	err := server.Run(":8761")
 	if err != nil {
 		return
 	}

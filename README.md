@@ -1,2 +1,3 @@
-# gin-mini-starter
+# library-sys-go
+
 golang gin mini starter with gin+gorm+sqlite

@@ -27,5 +27,16 @@ func migrate(db *gorm.DB, models ...interface{}) {
 // Migration migrate the schema
 func Migration(db *gorm.DB) {
 	// Migrate the schema
-	//migrate(db, &ActivationCode{}, &Token{})
+	migrate(db, &Book{}, &Reader{}, &Reservation{}, &Lending{})
+	migrate(db, &Admin{})
+}
+
+type Model struct {
+	ID        uint   `gorm:"primarykey" json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+func (m *Model) Query() *gorm.DB {
+	return DB.Model(m)
 }

@@ -1,0 +1,200 @@
+package v1
+
+import (
+	"library-sys-go/internal/api"
+	"library-sys-go/internal/middleware"
+	"library-sys-go/internal/model"
+	"library-sys-go/pkg/resp"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// 预约
+// Request Body: {reader_id, book_id}
+func SaveReservation(c *gin.Context) {
+	var req struct {
+		BookID uint `json:"bookId" binding:"required"`
+		Retain int  `json:"retain" binding:"required"`
+	}
+	user := c.MustGet("user").(*middleware.UserClaims)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
+	}
+	// 检查该书的库存是否充足
+	book := model.Book{}
+	err := book.Query().Where("id = ?", req.BookID).First(&book).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	if book.Stock <= 0 {
+		resp.Error(c, resp.CodeParamsInvalid, "该书库存不足")
+		return
+	}
+	// 检查该读者是否已经预约过该书
+	reservation := model.Reservation{}
+	err = reservation.Query().Where("reader_id = ? AND book_id = ?", user.ID, req.BookID).First(&reservation).Error
+	if err == nil {
+		resp.Error(c, resp.CodeParamsInvalid, "已经预约过该书了")
+		return
+	}
+	// 开启事务
+	tx := model.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	// 预约
+	reservation = model.Reservation{
+		ReaderID: user.ID,
+		BookID:   req.BookID,
+		Status:   model.ReservationStatusPending,
+	}
+	err = reservation.Query().Save(&reservation).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	// 该书库存减一
+	book.Stock--
+	err = book.Query().Save(&book).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	tx.Commit()
+	resp.Success(c)
+}
+
+// 取消预约
+func CancelReservation(c *gin.Context) {
+	var req struct {
+		ID int `json:"id" binding:"required"`
+	}
+	user := c.MustGet("user").(*middleware.UserClaims)
+	if err := c.ShouldBindQuery(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
+	}
+	reservation := model.Reservation{}
+	err := reservation.Query().Where("id = ?", req.ID).Where("reader_id = ?", user.ID).First(&reservation).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, "该预约不存在")
+		return
+	}
+	if reservation.Status != model.ReservationStatusPending {
+		resp.Error(c, resp.CodeParamsInvalid, "该预约已取消或已完成")
+		return
+	}
+	// 开启事务
+	tx := model.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	// 取消预约
+	reservation.Status = model.ReservationStatusCancel
+	err = reservation.Query().Save(&reservation).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	// 该书库存加一
+	book := model.Book{}
+	err = book.Query().Where("id = ?", reservation.BookID).First(&book).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	book.Stock++
+	err = book.Query().Save(&book).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	tx.Commit()
+	resp.Success(c)
+}
+
+// 获取预约列表
+func GetReservationList(c *gin.Context) {
+	var req struct {
+		ReaderID   int       `json:"readerId"`
+		BookID     int       `json:"bookId"`
+		StudentNo  string    `json:"studentNo"`
+		Phone      string    `json:"phone"`
+		ReaderName string    `json:"readerName"`
+		BookName   string    `json:"bookName"`
+		From       time.Time `json:"from"`
+		To         time.Time `json:"to"`
+		Status     uint8     `json:"status"`
+		api.Pagination
+	}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
+	}
+	reservation := model.Reservation{}
+	query := reservation.Query().Joins("LEFT JOIN reader ON reader.id = reservation.reader_id").Joins("LEFT JOIN book ON book.id = reservation.book_id")
+	if req.ReaderID != 0 {
+		query = query.Where("reservation.reader_id = ?", req.ReaderID)
+	}
+	if req.BookID != 0 {
+		query = query.Where("reservation.book_id = ?", req.BookID)
+	}
+	if req.StudentNo != "" {
+		query = query.Where("reader.student_no = ?", req.StudentNo)
+	}
+	if req.Phone != "" {
+		query = query.Where("reader.phone = ?", req.Phone)
+	}
+	if req.ReaderName != "" {
+		query = query.Where("reader.name = ?", req.ReaderName)
+	}
+	if req.BookName != "" {
+		query = query.Where("book.name = ?", req.BookName)
+	}
+	if !req.From.IsZero() {
+		query = query.Where("reservation.created_at >= ?", req.From)
+	}
+	if !req.To.IsZero() {
+		query = query.Where("reservation.created_at <= ?", req.To)
+	}
+	if req.Status != 0 {
+		query = query.Where("reservation.status = ?", req.Status)
+	}
+	var total int64
+	var list []model.Reservation
+	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("reservation.id DESC").Find(&list).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	resp.SuccessList(c, list, total)
+}
+
+// 读者获取预约列表
+func GetReaderReservationList(c *gin.Context) {
+	user := c.MustGet("user").(*middleware.UserClaims)
+	var req struct {
+		Status uint8 `json:"status"`
+		api.Pagination
+	}
+	reservations := []model.Reservation{}
+	query := model.DB.Model(&model.Reservation{})
+	query = query.Where("reader_id = ?", user.ID)
+	if req.Status != 0 {
+		query = query.Where("status = ?", req.Status)
+	}
+	var total int64
+	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("id DESC").Find(&reservations).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	resp.SuccessList(c, reservations, total)
+}
