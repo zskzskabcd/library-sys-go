@@ -21,7 +21,6 @@ func migrate(db *gorm.DB, models ...interface{}) {
 	err := db.AutoMigrate(models...)
 	if err != nil {
 		panic("failed to migrate database")
-		return
 	}
 }
 

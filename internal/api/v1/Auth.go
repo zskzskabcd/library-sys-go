@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"gin-mini-starter/utils/resp"
+	"gin-mini-starter/pkg/resp"
 
 	"github.com/gin-gonic/gin"
 )
