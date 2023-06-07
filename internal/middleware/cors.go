@@ -1,31 +1,6 @@
-package router
+package middleware
 
-import (
-	v1 "gin-mini-starter/api/v1"
-	"github.com/gin-gonic/gin"
-)
-
-func InitRouter() *gin.Engine {
-	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	// cors
-	r.Use(Cors())
-
-	// Common
-	apiV1 := r.Group("/api/v1")
-	{
-		// ping
-		apiV1.GET("/ping", v1.Ping)
-	}
-	// Auth
-	apiV1.Use(v1.Auth())
-	{
-
-	}
-
-	return r
-}
+import "github.com/gin-gonic/gin"
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {

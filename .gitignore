@@ -19,3 +19,5 @@ bin/*
 config.yml
 log.txt
 .idea/*
+
+*.db
