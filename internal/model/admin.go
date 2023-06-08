@@ -7,6 +7,6 @@ package model
 
 type Admin struct {
 	Model
-	Name     string `json:"name" gorm:"type:varchar(100);not null"`
+	Name     string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"admin"`
 	Password string `json:"password" gorm:"type:varchar(100);not null"`
 }

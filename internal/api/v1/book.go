@@ -8,8 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 新书入库 | 更新书籍信息
-// Request Body: {title, author, publisher, publish_date, summary, price, stock}
+// 新书入库 | 更新书籍信息 godoc
+// @Summary 新书入库 | 更新书籍信息
+// @Description 新书入库 | 更新书籍信息
+// @Tags 书籍
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param book body model.Book true "book"
+// @Success 200 {object} resp.Resp
+// @Router /api/v1/book/save [post]
 func SaveBook(c *gin.Context) {
 	var book model.Book
 	if err := c.ShouldBindJSON(&book); err != nil {
@@ -24,7 +32,16 @@ func SaveBook(c *gin.Context) {
 	resp.Success(c)
 }
 
-// 删除书籍
+// 删除书籍 godoc
+// @Summary 删除书籍
+// @Description 删除书籍
+// @Tags 书籍
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id query int true "id"
+// @Success 200 {object} resp.Resp
+// @Router /api/v1/book/delete [delete]
 func DeleteBook(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -42,7 +59,18 @@ func DeleteBook(c *gin.Context) {
 	resp.Success(c)
 }
 
-// 查询书籍列表
+// 查询书籍列表 godoc
+// @Summary 查询书籍列表
+// @Description 查询书籍列表
+// @Tags 书籍
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param keyword query string false "关键字"
+// @Param page query int false "页码"
+// @Param size query int false "每页条数"
+// @Success 200 {object} resp.Resp{data=[]model.Book}
+// @Router /api/v1/book/list [get]
 func ListBook(c *gin.Context) {
 	var req struct {
 		Keyword string `json:"keyword"`
@@ -72,7 +100,16 @@ func ListBook(c *gin.Context) {
 	resp.SuccessList(c, books, total)
 }
 
-// 查询书籍详情
+// 查询书籍详情 godoc
+// @Summary 查询书籍详情
+// @Description 查询书籍详情
+// @Tags 书籍
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id query int true "id"
+// @Success 200 {object} resp.Resp{data=model.Book}
+// @Router /api/v1/book/get [get]
 func GetBook(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`

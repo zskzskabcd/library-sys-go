@@ -11,13 +11,13 @@ import "time"
 
 type Lending struct {
 	Model
-	BookID    uint          `json:"book_id" gorm:"type:int;not null"`
+	BookID    uint          `json:"book_id" gorm:"type:int;not null" binding:"required" example:"1"`
 	Book      Book          `json:"book" gorm:"foreignkey:BookID"`
-	ReaderID  uint          `json:"reader_id" gorm:"type:int;not null"`
+	ReaderID  uint          `json:"reader_id" gorm:"type:int;not null" binding:"required" example:"1"`
 	Reader    Reader        `json:"reader" gorm:"foreignkey:ReaderID"`
-	LendTime  time.Time     `json:"lend_time" gorm:"type:date;not null"`
-	ReturnTim time.Time     `json:"return_time" gorm:"type:date;not null"`
-	Status    LendingStatus `json:"status" gorm:"type:tinyint;not null" binding:"required"`
+	LendTime  time.Time     `json:"lend_time" gorm:"type:date;not null" binding:"required"`
+	ReturnTim time.Time     `json:"return_time" gorm:"type:date;not null" binding:"required" example:"2021-01-01"`
+	Status    LendingStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3" enumdes:"1:借出,2:已归还,3:违约"`
 }
 
 // 借阅状态

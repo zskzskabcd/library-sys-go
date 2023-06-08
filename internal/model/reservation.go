@@ -7,12 +7,12 @@ package model
 
 type Reservation struct {
 	Model
-	BookID     uint              `json:"book_id" gorm:"type:int;not null" binding:"required"`
+	BookID     uint              `json:"bookId" gorm:"type:int;not null" binding:"required" example:"1"`
 	Book       Book              `json:"book" gorm:"foreignkey:BookID"`
-	ReaderID   uint              `json:"reader_id" gorm:"type:int;not null" binding:"required"`
+	ReaderID   uint              `json:"readerId" gorm:"type:int;not null" binding:"required" example:"1" `
 	Reader     Reader            `json:"reader" gorm:"foreignkey:ReaderID"`
-	Status     ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required"`
-	StatusText string            `json:"statusText" gorm:"-"` // 预约状态文本
+	Status     ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3,4" enumsdes:"1:进行中,2:已借阅,3:已超时,4:已取消"`
+	StatusText string            `json:"statusText" gorm:"-" example:"进行中"`
 }
 
 // 预约状态

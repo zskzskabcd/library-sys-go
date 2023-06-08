@@ -1,0 +1,838 @@
+definitions:
+  Response:
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      data:
+        description: 返回数据
+      msg:
+        description: 提示信息
+        example: success
+        type: string
+    type: object
+  model.Book:
+    properties:
+      author:
+        example: 许式伟
+        type: string
+      createdAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      price:
+        example: 99.99
+        type: number
+      publishDate:
+        example: "2019-01-01"
+        type: string
+      publisher:
+        example: 电子工业出版社
+        type: string
+      stock:
+        example: 100
+        type: integer
+      summary:
+        example: Go语言编程是一本介绍Go语言的书籍，内容包括Go语言的基础知识、并发编程、网络编程、Web编程、数据库编程等。
+        type: string
+      title:
+        example: Go语言编程
+        type: string
+      updatedAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+    required:
+    - author
+    - price
+    - publishDate
+    - publisher
+    - stock
+    - summary
+    - title
+    type: object
+  model.Lending:
+    properties:
+      book:
+        $ref: '#/definitions/model.Book'
+      book_id:
+        example: 1
+        type: integer
+      createdAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      lend_time:
+        type: string
+      reader:
+        $ref: '#/definitions/model.Reader'
+      reader_id:
+        example: 1
+        type: integer
+      return_time:
+        example: "2021-01-01"
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.LendingStatus'
+        enum:
+        - 1
+        - 2
+        - 3
+        example: 1
+      updatedAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+    required:
+    - book_id
+    - lend_time
+    - reader_id
+    - return_time
+    - status
+    type: object
+  model.LendingStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-varnames:
+    - LendingStatusLending
+    - LendingStatusReturned
+    - LendingStatusViolation
+  model.Reader:
+    properties:
+      createdAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+      gender:
+        example: 男
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      key:
+        example: "123456"
+        type: string
+      name:
+        example: 张三
+        type: string
+      phone:
+        example: "18888888888"
+        type: string
+      studentNo:
+        example: 2018000000
+        type: integer
+      updatedAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+    required:
+    - gender
+    - name
+    - phone
+    type: object
+  model.Reservation:
+    properties:
+      book:
+        $ref: '#/definitions/model.Book'
+      bookId:
+        example: 1
+        type: integer
+      createdAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      reader:
+        $ref: '#/definitions/model.Reader'
+      readerId:
+        example: 1
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.ReservationStatus'
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        example: 1
+      statusText:
+        example: 进行中
+        type: string
+      updatedAt:
+        example: "2021-01-01 00:00:00"
+        type: string
+    required:
+    - bookId
+    - readerId
+    - status
+    type: object
+  model.ReservationStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - ReservationStatusPending
+    - ReservationStatusSuccess
+    - ReservationStatusTimeout
+    - ReservationStatusCancel
+  v1.LoginReaderResp:
+    properties:
+      token:
+        example: xxx
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/book/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 删除书籍
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 删除书籍
+      tags:
+      - 书籍
+  /api/v1/book/get:
+    get:
+      consumes:
+      - application/json
+      description: 查询书籍详情
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Book'
+              type: object
+      summary: 查询书籍详情
+      tags:
+      - 书籍
+  /api/v1/book/list:
+    get:
+      consumes:
+      - application/json
+      description: 查询书籍列表
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Book'
+                  type: array
+              type: object
+      summary: 查询书籍列表
+      tags:
+      - 书籍
+  /api/v1/book/save:
+    post:
+      consumes:
+      - application/json
+      description: 新书入库 | 更新书籍信息
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: book
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/model.Book'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 新书入库 | 更新书籍信息
+      tags:
+      - 书籍
+  /api/v1/lend/book:
+    post:
+      consumes:
+      - application/json
+      description: 借书
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 书籍ID
+        in: body
+        name: bookId
+        required: true
+        schema:
+          type: integer
+      - description: 借阅时长（天）
+        in: body
+        name: days
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 借书
+      tags:
+      - 借阅
+  /api/v1/lending/create:
+    post:
+      consumes:
+      - application/json
+      description: 借阅记录创建
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 书籍ID
+        in: body
+        name: bookId
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Lending'
+                  type: array
+              type: object
+      summary: 借阅记录创建
+      tags:
+      - 借阅
+  /api/v1/lending/detail:
+    get:
+      consumes:
+      - application/json
+      description: 借阅记录详情
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 借阅记录ID
+        in: query
+        name: lendingId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Lending'
+              type: object
+      summary: 借阅记录详情
+      tags:
+      - 借阅
+  /api/v1/lending/list:
+    get:
+      consumes:
+      - application/json
+      description: 借阅记录
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者ID
+        in: query
+        name: readerId
+        type: integer
+      - description: 书籍ID
+        in: query
+        name: bookId
+        type: integer
+      - description: 学号
+        in: query
+        name: studentNo
+        type: string
+      - description: 手机号
+        in: query
+        name: phone
+        type: string
+      - description: 读者姓名
+        in: query
+        name: readerName
+        type: string
+      - description: 书籍名称
+        in: query
+        name: bookName
+        type: string
+      - description: 借阅时间开始
+        in: query
+        name: from
+        type: string
+      - description: 借阅时间结束
+        in: query
+        name: to
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Lending'
+                  type: array
+              type: object
+      summary: 借阅记录
+      tags:
+      - 借阅
+  /api/v1/return/book:
+    post:
+      consumes:
+      - application/json
+      description: 还书
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 书籍ID
+        in: body
+        name: bookId
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 还书
+      tags:
+      - 借阅
+  /v1/reader/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 删除读者
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 删除读者
+      tags:
+      - 读者
+  /v1/reader/get:
+    get:
+      consumes:
+      - application/json
+      description: 查询读者详情
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Reader'
+              type: object
+      summary: 查询读者详情
+      tags:
+      - 读者
+  /v1/reader/list:
+    get:
+      consumes:
+      - application/json
+      description: 查询读者列表
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Reader'
+              type: object
+      summary: 查询读者列表
+      tags:
+      - 读者
+  /v1/reader/login:
+    post:
+      consumes:
+      - application/json
+      description: 读者登陆
+      parameters:
+      - description: 读者信息
+        in: body
+        name: reader
+        required: true
+        schema:
+          $ref: '#/definitions/model.Reader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.LoginReaderResp'
+              type: object
+      summary: 读者登陆
+      tags:
+      - 读者
+  /v1/reader/save:
+    post:
+      consumes:
+      - application/json
+      description: 新增/更新读者信息
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者信息
+        in: body
+        name: reader
+        required: true
+        schema:
+          $ref: '#/definitions/model.Reader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 新增/更新读者信息
+      tags:
+      - 读者
+  /v1/reservation/cancel:
+    post:
+      consumes:
+      - application/json
+      description: 取消预约
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 预约ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 取消预约
+      tags:
+      - 预约
+  /v1/reservation/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取预约列表
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者ID
+        in: query
+        name: readerId
+        type: integer
+      - description: 书籍ID
+        in: query
+        name: bookId
+        type: integer
+      - description: 学号
+        in: query
+        name: studentNo
+        type: string
+      - description: 手机号
+        in: query
+        name: phone
+        type: string
+      - description: 读者姓名
+        in: query
+        name: readerName
+        type: string
+      - description: 书籍名称
+        in: query
+        name: bookName
+        type: string
+      - description: 预约开始时间
+        in: query
+        name: from
+        type: string
+      - description: 预约结束时间
+        in: query
+        name: to
+        type: string
+      - description: 预约状态
+        in: query
+        name: status
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Reservation'
+              type: object
+      summary: 获取预约列表
+      tags:
+      - 预约
+  /v1/reservation/reader/list:
+    get:
+      consumes:
+      - application/json
+      description: 读者获取预约列表
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 预约状态
+        in: query
+        name: status
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Reservation'
+              type: object
+      summary: 读者获取预约列表
+      tags:
+      - 预约
+  /v1/reservation/save:
+    post:
+      consumes:
+      - application/json
+      description: 预约
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 书籍ID
+        in: body
+        name: bookId
+        required: true
+        schema:
+          type: integer
+      - description: 预约时长
+        in: body
+        name: retain
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 预约
+      tags:
+      - 预约
+swagger: "2.0"

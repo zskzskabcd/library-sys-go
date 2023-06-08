@@ -13,11 +13,11 @@ import (
 // phone (varchar，手机号码)
 type Reader struct {
 	Model
-	Name      string `json:"name" gorm:"type:varchar(100);not null" binding:"required"`
-	Gender    string `json:"gender" gorm:"type:varchar(6);not null" binding:"required"`
-	Phone     string `json:"phone" gorm:"type:varchar(20);not null" binding:"required"`
-	StudentNo uint   `json:"studentNo" gorm:"type:int;not null" binding:"required"`
-	Key       string `json:"key" gorm:"type:varchar(100);not null"`
+	Name      string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"张三"`
+	Gender    string `json:"gender" gorm:"type:varchar(6);not null" binding:"required" example:"男"`
+	Phone     string `json:"phone" gorm:"type:varchar(20);not null" binding:"required" example:"18888888888"`
+	StudentNo uint   `json:"studentNo" gorm:"type:int;not null" binding:"required gt=0" example:"2018000000"`
+	Key       string `json:"key" gorm:"type:varchar(100);not null" example:"123456"`
 }
 
 // EncryptPassword 加密密码

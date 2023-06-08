@@ -25,6 +25,12 @@ func Success(c *gin.Context) {
 	})
 }
 
+type Resp struct {
+	Code int         `json:"code" example:"200"`    // 状态码
+	Msg  string      `json:"msg" example:"success"` // 提示信息
+	Data interface{} `json:"data"`                  // 返回数据
+} //@name Response
+
 // SuccessData 操作成功返回
 func SuccessData(c *gin.Context, data interface{}) {
 	c.JSON(200, gin.H{

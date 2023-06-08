@@ -10,8 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 预约
-// Request Body: {reader_id, book_id}
+// 预约 godoc
+// @Summary 预约
+// @Description 预约
+// @Tags 预约
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param bookId body int true "书籍ID"
+// @Param retain body int true "预约时长"
+// @Success 200 {object} resp.Resp
+// @Router /v1/reservation/save [post]
 func SaveReservation(c *gin.Context) {
 	var req struct {
 		BookID uint `json:"bookId" binding:"required"`
@@ -69,7 +78,16 @@ func SaveReservation(c *gin.Context) {
 	resp.Success(c)
 }
 
-// 取消预约
+// 取消预约 godoc
+// @Summary 取消预约
+// @Description 取消预约
+// @Tags 预约
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param id query int true "预约ID"
+// @Success 200 {object} resp.Resp
+// @Router /v1/reservation/cancel [post]
 func CancelReservation(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -120,7 +138,26 @@ func CancelReservation(c *gin.Context) {
 	resp.Success(c)
 }
 
-// 获取预约列表
+// 获取预约列表 godoc
+// @Summary 获取预约列表
+// @Description 获取预约列表
+// @Tags 预约
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param readerId query int false "读者ID"
+// @Param bookId query int false "书籍ID"
+// @Param studentNo query string false "学号"
+// @Param phone query string false "手机号"
+// @Param readerName query string false "读者姓名"
+// @Param bookName query string false "书籍名称"
+// @Param from query string false "预约开始时间"
+// @Param to query string false "预约结束时间"
+// @Param status query int false "预约状态"
+// @Param page query int false "页码"
+// @Param size query int false "每页数量"
+// @Success 200 {object} resp.Resp{data=model.Reservation}
+// @Router /v1/reservation/list [get]
 func GetReservationList(c *gin.Context) {
 	var req struct {
 		ReaderID   int       `json:"readerId"`
@@ -177,7 +214,18 @@ func GetReservationList(c *gin.Context) {
 	resp.SuccessList(c, list, total)
 }
 
-// 读者获取预约列表
+// 读者获取预约列表 godoc
+// @Summary 读者获取预约列表
+// @Description 读者获取预约列表
+// @Tags 预约
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param status query int false "预约状态"
+// @Param page query int false "页码"
+// @Param size query int false "每页数量"
+// @Success 200 {object} resp.Resp{data=model.Reservation}
+// @Router /v1/reservation/reader/list [get]
 func GetReaderReservationList(c *gin.Context) {
 	user := c.MustGet("user").(*middleware.UserClaims)
 	var req struct {

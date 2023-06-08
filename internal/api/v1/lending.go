@@ -14,8 +14,17 @@ import (
 
 // 借阅相关
 
-// 借书
-// Request Body: {book_id, reader_id}
+// 借书 godoc
+// @Summary 借书
+// @Description 借书
+// @Tags 借阅
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param bookId body int true "书籍ID"
+// @Param days body int true "借阅时长（天）"
+// @Success 200 {object} resp.Resp
+// @Router /api/v1/lend/book [post]
 func LendBook(c *gin.Context) {
 	var req struct {
 		BookID uint `json:"bookId" binding:"required"`
@@ -85,8 +94,16 @@ func LendBook(c *gin.Context) {
 	resp.Success(c)
 }
 
-// 还书
-// Request Body: {book_id, reader_id}
+// 还书 godoc
+// @Summary 还书
+// @Description 还书
+// @Tags 借阅
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param bookId body int true "书籍ID"
+// @Success 200 {object} resp.Resp
+// @Router /api/v1/return/book [post]
 func ReturnBook(c *gin.Context) {
 	var req struct {
 		BookID int `json:"bookId" binding:"required"`
@@ -143,6 +160,25 @@ func ReturnBook(c *gin.Context) {
 }
 
 // 借阅记录
+// @Summary 借阅记录
+// @Description 借阅记录
+// @Tags 借阅
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param readerId query int false "读者ID"
+// @Param bookId query int false "书籍ID"
+// @Param studentNo query string false "学号"
+// @Param phone query string false "手机号"
+// @Param readerName query string false "读者姓名"
+// @Param bookName query string false "书籍名称"
+// @Param from query string false "借阅时间开始"
+// @Param to query string false "借阅时间结束"
+// @Param status query int false "状态"
+// @Param page query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} resp.Resp{data=[]model.Lending}
+// @Router /api/v1/lending/list [get]
 func ListLending(c *gin.Context) {
 	var req struct {
 		ReaderID   int       `json:"readerId"`
@@ -203,7 +239,16 @@ func ListLending(c *gin.Context) {
 	resp.SuccessList(c, lendings, total)
 }
 
-// 借阅记录详情
+// LendingDetail godoc
+// @Summary 借阅记录详情
+// @Description 借阅记录详情
+// @Tags 借阅
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param lendingId query int true "借阅记录ID"
+// @Success 200 {object} resp.Resp{data=model.Lending}
+// @Router /api/v1/lending/detail [get]
 func LendingDetail(c *gin.Context) {
 	var req struct {
 		LendingID int `json:"lendingId" binding:"required"`
@@ -231,7 +276,16 @@ func LendingDetail(c *gin.Context) {
 	resp.SuccessData(c, lending)
 }
 
-// 用户查询借阅记录
+// LendingCreate godoc
+// @Summary 借阅记录创建
+// @Description 借阅记录创建
+// @Tags 借阅
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param bookId body int true "书籍ID"
+// @Success 200 {object} resp.Resp{data=[]model.Lending}
+// @Router /api/v1/lending/create [post]
 func ListLendingByReader(c *gin.Context) {
 	var req struct {
 		BookID int `json:"bookId" binding:"required"`
