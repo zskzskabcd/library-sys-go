@@ -24,9 +24,9 @@ jobs:
         id: check
         run: |
           git diff --exit-code
-          echo "::set-output name=has_change::false"
+          echo "::save-state name=has_change::false"
           if [ $? -eq 1 ]; then
-            echo "::set-output name=has_change::true"
+            echo "::save-state name=has_change::true"
           fi
       - name: Commit files
         if: steps.check.outputs.has_change == 'true'
