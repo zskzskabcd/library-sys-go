@@ -17,8 +17,13 @@ mkdir -p ./temp
 rm -rf ./out/*
 rm -rf ./temp/*
 
-go build -o ./temp/library_sys_go-${GOOS}-${GOARCH} -trimpath -ldflags="-s -w" ../main.go
+outName="library_sys_go-${GOOS}-${GOARCH}"
+if [ "$GOOS" == "windows" ]; then
+  outName="${outName}.exe"
+fi
+
+go build -o ./temp/${outName} -trimpath -ldflags="-s -w" ../main.go
 
 cp -r ../docs ./temp/docs
 
-tar -zcvf ./out/library_sys_go-${GOOS}-${GOARCH}.tar.gz -C ./temp/ .
+tar -zcvf ./out/${outName}.tar.gz -C ./temp/ .
