@@ -1,6 +1,7 @@
 package main
 
 import (
+	v1 "library-sys-go/internal/api/v1"
 	"library-sys-go/internal/model"
 	"library-sys-go/internal/router"
 	"log"
@@ -26,9 +27,11 @@ func main() {
 	// @version v1
 
 	model.Setup()
+	v1.AddAdmin()
 	server := router.InitRouter()
 	log.Println("server run at 8761")
 	log.Println("访问 http://127.0.0.1:8761/doc/index 获取swagger文档")
+	log.Println("访问 http://127.0.0.1:8761/swagger/index.html 获取swagger文档")
 	err := server.Run(":8761")
 	if err != nil {
 		return

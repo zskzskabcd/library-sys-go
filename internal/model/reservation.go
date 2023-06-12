@@ -1,5 +1,7 @@
 package model
 
+import "gorm.io/gorm"
+
 // 预约表（reservation）
 // id (int，主键)
 // book_id (int，外键，关联书籍表)
@@ -7,12 +9,15 @@ package model
 
 type Reservation struct {
 	Model
-	BookID     uint              `json:"bookId" gorm:"type:int;not null" binding:"required" example:"1"`
-	Book       Book              `json:"book" gorm:"foreignkey:BookID"`
-	ReaderID   uint              `json:"readerId" gorm:"type:int;not null" binding:"required" example:"1" `
-	Reader     Reader            `json:"reader" gorm:"foreignkey:ReaderID"`
-	Status     ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3,4" enumsdes:"1:进行中,2:已借阅,3:已超时,4:已取消"`
-	StatusText string            `json:"statusText" gorm:"-" example:"进行中"`
+	BookID   uint              `json:"bookId" gorm:"type:int;not null" binding:"required" example:"1"`
+	Book     Book              `json:"book" gorm:"foreignkey:book_id"`
+	ReaderID uint              `json:"readerId" gorm:"type:int;not null" binding:"required" example:"1" `
+	Reader   Reader            `json:"reader" gorm:"foreignkey:reader_id"`
+	Status   ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3,4" enumsdes:"1:进行中,2:已借阅,3:已超时,4:已取消"`
+}
+
+func (r *Reservation) Query() *gorm.DB {
+	return DB.Model(r)
 }
 
 // 预约状态

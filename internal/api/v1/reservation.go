@@ -10,6 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type SaveReservationReq struct {
+	BookID uint `json:"bookId" binding:"required"`
+	Retain int  `json:"retain" binding:"required"`
+}
+
 // 预约 godoc
 // @Summary 预约
 // @Description 预约
@@ -17,15 +22,11 @@ import (
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param bookId body int true "书籍ID"
-// @Param retain body int true "预约时长"
+// @Param req body SaveReservationReq true "预约信息"
 // @Success 200 {object} resp.Resp
 // @Router /reservation/save [post]
 func SaveReservation(c *gin.Context) {
-	var req struct {
-		BookID uint `json:"bookId" binding:"required"`
-		Retain int  `json:"retain" binding:"required"`
-	}
+	var req SaveReservationReq
 	user := c.MustGet("user").(*middleware.UserClaims)
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())

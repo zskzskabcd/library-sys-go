@@ -5,6 +5,8 @@ import (
 	"library-sys-go/internal/middleware"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/zskzskabcd/knife4g"
 )
 
@@ -16,6 +18,7 @@ func InitRouter() *gin.Engine {
 	r.Use(middleware.Cors())
 	// swagger
 	r.GET("/doc/*any", knife4g.Handler(knife4g.Config{RelativePath: "/doc"}))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.URL("/doc/front/docJson")))
 	// Common
 	api := r.Group("/api/v1")
 	{

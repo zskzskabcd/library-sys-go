@@ -190,11 +190,51 @@ definitions:
     - ReservationStatusSuccess
     - ReservationStatusTimeout
     - ReservationStatusCancel
+  v1.AdminLoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  v1.LoginReaderReq:
+    properties:
+      password:
+        type: string
+      studentNo:
+        type: string
+    required:
+    - password
+    - studentNo
+    type: object
   v1.LoginResp:
     properties:
       token:
         example: xxx
         type: string
+    type: object
+  v1.SaveReservationReq:
+    properties:
+      bookId:
+        type: integer
+      retain:
+        type: integer
+    required:
+    - bookId
+    - retain
+    type: object
+  v1.UpdateReaderPasswordReq:
+    properties:
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    required:
+    - newPassword
+    - oldPassword
     type: object
 info:
   contact:
@@ -235,16 +275,12 @@ paths:
       - application/json
       description: 管理员登录
       parameters:
-      - description: 用户名
-        in: query
-        name: username
+      - description: 管理员登录信息
+        in: body
+        name: userInfo
         required: true
-        type: string
-      - description: 密码
-        in: query
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/v1.AdminLoginReq'
       produces:
       - application/json
       responses:
@@ -395,17 +431,15 @@ paths:
         required: true
         type: string
       - description: 书籍ID
-        in: body
+        in: query
         name: bookId
         required: true
-        schema:
-          type: integer
+        type: integer
       - description: 借阅时长（天）
-        in: body
+        in: query
         name: days
         required: true
-        schema:
-          type: integer
+        type: integer
       produces:
       - application/json
       responses:
@@ -531,11 +565,10 @@ paths:
         required: true
         type: string
       - description: 书籍ID
-        in: body
+        in: query
         name: bookId
         required: true
-        schema:
-          type: integer
+        type: integer
       - description: 页码
         in: query
         name: page
@@ -561,6 +594,21 @@ paths:
       summary: 读者查询借阅记录
       tags:
       - 借阅
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: 测试接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 测试接口
+      tags:
+      - 测试
   /reader:
     delete:
       consumes:
@@ -687,18 +735,12 @@ paths:
       - application/json
       description: 读者登陆
       parameters:
-      - description: 学号
+      - description: 读者登陆信息
         in: body
-        name: studentNo
+        name: reader
         required: true
         schema:
-          type: string
-      - description: 密码
-        in: body
-        name: password
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/v1.LoginReaderReq'
       produces:
       - application/json
       responses:
@@ -725,18 +767,12 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 旧密码
+      - description: 读者修改密码信息
         in: body
-        name: oldPassword
+        name: req
         required: true
         schema:
-          type: string
-      - description: 新密码
-        in: body
-        name: newPassword
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/v1.UpdateReaderPasswordReq'
       produces:
       - application/json
       responses:
@@ -892,18 +928,12 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 书籍ID
+      - description: 预约信息
         in: body
-        name: bookId
+        name: req
         required: true
         schema:
-          type: integer
-      - description: 预约时长
-        in: body
-        name: retain
-        required: true
-        schema:
-          type: integer
+          $ref: '#/definitions/v1.SaveReservationReq'
       produces:
       - application/json
       responses:
@@ -926,11 +956,10 @@ paths:
         required: true
         type: string
       - description: 书籍ID
-        in: body
+        in: query
         name: bookId
         required: true
-        schema:
-          type: integer
+        type: integer
       produces:
       - application/json
       responses:

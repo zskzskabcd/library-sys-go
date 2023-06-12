@@ -27,6 +27,14 @@ func Auth() gin.HandlerFunc {
 	}
 }
 
+// Ping 测试接口
+// @Summary 测试接口
+// @Description 测试接口
+// @Tags 测试
+// @Accept json
+// @Produce json
+// @Success 200 {object} resp.Resp
+// @Router /ping [get]
 func Ping(c *gin.Context) {
 	resp.SuccessData(c, "pong")
 }

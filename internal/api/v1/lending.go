@@ -21,8 +21,8 @@ import (
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param bookId body int true "书籍ID"
-// @Param days body int true "借阅时长（天）"
+// @Param bookId query int true "书籍ID"
+// @Param days query int true "借阅时长（天）"
 // @Success 200 {object} resp.Resp
 // @Router /lend/book [post]
 func LendBook(c *gin.Context) {
@@ -31,7 +31,7 @@ func LendBook(c *gin.Context) {
 		// 借阅时长（天）
 		Days int `json:"days" binding:"required"`
 	}
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -101,14 +101,14 @@ func LendBook(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param bookId body int true "书籍ID"
+// @Param bookId query int true "书籍ID"
 // @Success 200 {object} resp.Resp
 // @Router /return/book [post]
 func ReturnBook(c *gin.Context) {
 	var req struct {
 		BookID int `json:"bookId" binding:"required"`
 	}
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -283,7 +283,7 @@ func LendingDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param bookId body int true "书籍ID"
+// @Param bookId query int true "书籍ID"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=[]model.Lending}

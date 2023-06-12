@@ -72,18 +72,13 @@ const docTemplate = `{
                 "summary": "管理员登录",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "管理员登录信息",
+                        "name": "userInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.AdminLoginReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -324,22 +319,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
                         "description": "书籍ID",
                         "name": "bookId",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "integer",
                         "description": "借阅时长（天）",
                         "name": "days",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -538,13 +529,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
                         "description": "书籍ID",
                         "name": "bookId",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -579,6 +568,29 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "description": "测试接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "测试"
+                ],
+                "summary": "测试接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
                         }
                     }
                 }
@@ -788,21 +800,12 @@ const docTemplate = `{
                 "summary": "读者登陆",
                 "parameters": [
                     {
-                        "description": "学号",
-                        "name": "studentNo",
+                        "description": "读者登陆信息",
+                        "name": "reader",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "密码",
-                        "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/v1.LoginReaderReq"
                         }
                     }
                 ],
@@ -850,21 +853,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "旧密码",
-                        "name": "oldPassword",
+                        "description": "读者修改密码信息",
+                        "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "新密码",
-                        "name": "newPassword",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/v1.UpdateReaderPasswordReq"
                         }
                     }
                 ],
@@ -1111,21 +1105,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "书籍ID",
-                        "name": "bookId",
+                        "description": "预约信息",
+                        "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "预约时长",
-                        "name": "retain",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
+                            "$ref": "#/definitions/v1.SaveReservationReq"
                         }
                     }
                 ],
@@ -1161,13 +1146,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
                         "description": "书籍ID",
                         "name": "bookId",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1440,12 +1423,72 @@ const docTemplate = `{
                 "ReservationStatusCancel"
             ]
         },
+        "v1.AdminLoginReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.LoginReaderReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "studentNo"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "studentNo": {
+                    "type": "string"
+                }
+            }
+        },
         "v1.LoginResp": {
             "type": "object",
             "properties": {
                 "token": {
                     "type": "string",
                     "example": "xxx"
+                }
+            }
+        },
+        "v1.SaveReservationReq": {
+            "type": "object",
+            "required": [
+                "bookId",
+                "retain"
+            ],
+            "properties": {
+                "bookId": {
+                    "type": "integer"
+                },
+                "retain": {
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.UpdateReaderPasswordReq": {
+            "type": "object",
+            "required": [
+                "newPassword",
+                "oldPassword"
+            ],
+            "properties": {
+                "newPassword": {
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "type": "string"
                 }
             }
         }

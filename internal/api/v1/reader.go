@@ -138,21 +138,22 @@ type LoginResp struct {
 	Token string `json:"token" example:"xxx"`
 }
 
+type LoginReaderReq struct {
+	StudentNo string `json:"studentNo" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+}
+
 // 读者登陆 godoc
 // @Summary 读者登陆
 // @Description 读者登陆
 // @Tags 读者
 // @Accept json
 // @Produce json
-// @Param studentNo body string true "学号"
-// @Param password body string true "密码"
+// @Param reader body LoginReaderReq true "读者登陆信息"
 // @Success 200 {object} resp.Resp{data=LoginResp}
 // @Router /reader/login [post]
 func LoginReader(c *gin.Context) {
-	var req struct {
-		StudentNo string `json:"studentNo" binding:"required"`
-		Password  string `json:"password" binding:"required"`
-	}
+	var req LoginReaderReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
@@ -185,6 +186,11 @@ func LoginReader(c *gin.Context) {
 	})
 }
 
+type UpdateReaderPasswordReq struct {
+	OldPassword string `json:"oldPassword" binding:"required"`
+	NewPassword string `json:"newPassword" binding:"required"`
+}
+
 // 读者修改密码 godoc
 // @Summary 读者修改密码
 // @Description 读者修改密码
@@ -192,15 +198,11 @@ func LoginReader(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param oldPassword body string true "旧密码"
-// @Param newPassword body string true "新密码"
+// @Param req body UpdateReaderPasswordReq true "读者修改密码信息"
 // @Success 200 {object} resp.Resp
 // @Router /reader/password [put]
 func UpdateReaderPassword(c *gin.Context) {
-	var req struct {
-		OldPassword string `json:"oldPassword" binding:"required"`
-		NewPassword string `json:"newPassword" binding:"required"`
-	}
+	var req UpdateReaderPasswordReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return

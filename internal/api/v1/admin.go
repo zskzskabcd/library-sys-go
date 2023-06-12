@@ -9,21 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AdminLoginReq struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 // 管理员登录 godoc
 // @Summary 管理员登录
 // @Description 管理员登录
 // @Tags 管理员
 // @Accept json
 // @Produce json
-// @Param username query string true "用户名"
-// @Param password query string true "密码"
+// @Param userInfo body AdminLoginReq true "管理员登录信息"
 // @Success 200 {object} resp.Resp{data=LoginResp}
 // @Router /admin/login [post]
 func AdminLogin(c *gin.Context) {
-	var req struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
-	}
+	var req AdminLoginReq
 	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // 管理员表（admin）
@@ -15,6 +16,10 @@ type Admin struct {
 	Model
 	Name     string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"admin"`
 	Password string `json:"password" gorm:"type:varchar(100);not null"`
+}
+
+func (m *Admin) Query() *gorm.DB {
+	return DB.Model(m)
 }
 
 // EncryptPassword 加密密码

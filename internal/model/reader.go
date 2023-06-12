@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // 读者表（reader）
@@ -13,11 +14,18 @@ import (
 // phone (varchar，手机号码)
 type Reader struct {
 	Model
-	Name      string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"张三"`
-	Gender    string `json:"gender" gorm:"type:varchar(6);not null" binding:"required" example:"男"`
-	Phone     string `json:"phone" gorm:"type:varchar(20);not null" binding:"required" example:"18888888888"`
-	StudentNo uint   `json:"studentNo" gorm:"type:int;not null" binding:"required gt=0" example:"2018000000"`
-	Key       string `json:"key" gorm:"type:varchar(100);not null" example:"123456"`
+	Name        string        `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"张三"`
+	Gender      string        `json:"gender" gorm:"type:varchar(6);not null" binding:"required" example:"男"`
+	Phone       string        `json:"phone" gorm:"type:varchar(20);not null" binding:"required" example:"18888888888"`
+	StudentNo   uint          `json:"studentNo" gorm:"type:int;not null" binding:"required gt=0" example:"2018000000"`
+	Key         string        `json:"key" gorm:"type:varchar(100);not null" example:"123456"`
+	Books       []Book        `json:"book" gorm:"many2many:reader_book"`
+	Reservation []Reservation `json:"reservation" gorm:"foreignkey:reader_id"`
+}
+
+// Query 查询
+func (r *Reader) Query() *gorm.DB {
+	return DB.Model(r)
 }
 
 // EncryptPassword 加密密码
