@@ -9,8 +9,6 @@ if [ -z "$GOARCH" ]; then
   export GOARCH=$(go env GOARCH)
 fi
 
-swag init -d .. -o ../docs
-
 # 打包
 mkdir -p ./out
 mkdir -p ./temp
