@@ -12,6 +12,8 @@ fi
 swag init -d .. -o ../docs
 
 # 打包
+mkdir -p ./out
+mkdir -p ./temp
 rm -rf ./out/*
 rm -rf ./temp/*
 
