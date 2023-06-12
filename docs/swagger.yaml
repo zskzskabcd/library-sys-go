@@ -59,7 +59,7 @@ definitions:
     properties:
       book:
         $ref: '#/definitions/model.Book'
-      book_id:
+      bookId:
         example: 1
         type: integer
       createdAt:
@@ -69,14 +69,14 @@ definitions:
         example: 1
         format: int64
         type: integer
-      lend_time:
+      lendTime:
         type: string
       reader:
         $ref: '#/definitions/model.Reader'
-      reader_id:
+      readerId:
         example: 1
         type: integer
-      return_time:
+      returnTime:
         example: "2021-01-01"
         type: string
       status:
@@ -91,10 +91,10 @@ definitions:
         example: "2021-01-01 00:00:00"
         type: string
     required:
-    - book_id
-    - lend_time
-    - reader_id
-    - return_time
+    - bookId
+    - lendTime
+    - readerId
+    - returnTime
     - status
     type: object
   model.LendingStatus:
@@ -109,6 +109,10 @@ definitions:
     - LendingStatusViolation
   model.Reader:
     properties:
+      book:
+        items:
+          $ref: '#/definitions/model.Book'
+        type: array
       createdAt:
         example: "2021-01-01 00:00:00"
         type: string
@@ -128,6 +132,10 @@ definitions:
       phone:
         example: "18888888888"
         type: string
+      reservation:
+        items:
+          $ref: '#/definitions/model.Reservation'
+        type: array
       studentNo:
         example: 2018000000
         type: integer
@@ -167,9 +175,6 @@ definitions:
         - 3
         - 4
         example: 1
-      statusText:
-        example: 进行中
-        type: string
       updatedAt:
         example: "2021-01-01 00:00:00"
         type: string

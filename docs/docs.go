@@ -1241,17 +1241,17 @@ const docTemplate = `{
         "model.Lending": {
             "type": "object",
             "required": [
-                "book_id",
-                "lend_time",
-                "reader_id",
-                "return_time",
+                "bookId",
+                "lendTime",
+                "readerId",
+                "returnTime",
                 "status"
             ],
             "properties": {
                 "book": {
                     "$ref": "#/definitions/model.Book"
                 },
-                "book_id": {
+                "bookId": {
                     "type": "integer",
                     "example": 1
                 },
@@ -1264,17 +1264,17 @@ const docTemplate = `{
                     "format": "int64",
                     "example": 1
                 },
-                "lend_time": {
+                "lendTime": {
                     "type": "string"
                 },
                 "reader": {
                     "$ref": "#/definitions/model.Reader"
                 },
-                "reader_id": {
+                "readerId": {
                     "type": "integer",
                     "example": 1
                 },
-                "return_time": {
+                "returnTime": {
                     "type": "string",
                     "example": "2021-01-01"
                 },
@@ -1318,6 +1318,12 @@ const docTemplate = `{
                 "phone"
             ],
             "properties": {
+                "book": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Book"
+                    }
+                },
                 "createdAt": {
                     "type": "string",
                     "example": "2021-01-01 00:00:00"
@@ -1342,6 +1348,12 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "18888888888"
+                },
+                "reservation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Reservation"
+                    }
                 },
                 "studentNo": {
                     "type": "integer",
@@ -1397,10 +1409,6 @@ const docTemplate = `{
                         }
                     ],
                     "example": 1
-                },
-                "statusText": {
-                    "type": "string",
-                    "example": "进行中"
                 },
                 "updatedAt": {
                     "type": "string",
