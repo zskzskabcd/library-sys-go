@@ -20,7 +20,7 @@ import (
 // @Param bookId body int true "书籍ID"
 // @Param retain body int true "预约时长"
 // @Success 200 {object} resp.Resp
-// @Router /v1/reservation/save [post]
+// @Router /reservation/save [post]
 func SaveReservation(c *gin.Context) {
 	var req struct {
 		BookID uint `json:"bookId" binding:"required"`
@@ -87,7 +87,7 @@ func SaveReservation(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param id query int true "预约ID"
 // @Success 200 {object} resp.Resp
-// @Router /v1/reservation/cancel [post]
+// @Router /reservation/cancel [post]
 func CancelReservation(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -157,7 +157,7 @@ func CancelReservation(c *gin.Context) {
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=model.Reservation}
-// @Router /v1/reservation/list [get]
+// @Router /reservation/list [get]
 func GetReservationList(c *gin.Context) {
 	var req struct {
 		ReaderID   int       `json:"readerId"`
@@ -225,7 +225,7 @@ func GetReservationList(c *gin.Context) {
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=model.Reservation}
-// @Router /v1/reservation/reader/list [get]
+// @Router /reservation/reader/list [get]
 func GetReaderReservationList(c *gin.Context) {
 	user := c.MustGet("user").(*middleware.UserClaims)
 	var req struct {

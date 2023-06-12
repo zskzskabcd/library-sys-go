@@ -24,7 +24,7 @@ import (
 // @Param bookId body int true "书籍ID"
 // @Param days body int true "借阅时长（天）"
 // @Success 200 {object} resp.Resp
-// @Router /api/v1/lend/book [post]
+// @Router /lend/book [post]
 func LendBook(c *gin.Context) {
 	var req struct {
 		BookID uint `json:"bookId" binding:"required"`
@@ -103,7 +103,7 @@ func LendBook(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param bookId body int true "书籍ID"
 // @Success 200 {object} resp.Resp
-// @Router /api/v1/return/book [post]
+// @Router /return/book [post]
 func ReturnBook(c *gin.Context) {
 	var req struct {
 		BookID int `json:"bookId" binding:"required"`
@@ -178,7 +178,7 @@ func ReturnBook(c *gin.Context) {
 // @Param page query int false "页码"
 // @Param pageSize query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=[]model.Lending}
-// @Router /api/v1/lending/list [get]
+// @Router /lending/list [get]
 func ListLending(c *gin.Context) {
 	var req struct {
 		ReaderID   int       `json:"readerId"`
@@ -248,7 +248,7 @@ func ListLending(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param lendingId query int true "借阅记录ID"
 // @Success 200 {object} resp.Resp{data=model.Lending}
-// @Router /api/v1/lending/detail [get]
+// @Router /lending/detail [get]
 func LendingDetail(c *gin.Context) {
 	var req struct {
 		LendingID int `json:"lendingId" binding:"required"`
@@ -256,7 +256,7 @@ func LendingDetail(c *gin.Context) {
 	// 用户只能查询自己的借阅记录
 	user := c.MustGet("user").(*middleware.UserClaims)
 	var readerID uint
-	if user.Role == middleware.RoleReader {
+	if !middleware.RoleContains(user.Role, middleware.RoleAdmin) {
 		readerID = user.ID
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -277,15 +277,17 @@ func LendingDetail(c *gin.Context) {
 }
 
 // LendingCreate godoc
-// @Summary 借阅记录创建
-// @Description 借阅记录创建
+// @Summary 读者查询借阅记录
+// @Description 读者查询借阅记录
 // @Tags 借阅
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param bookId body int true "书籍ID"
+// @Param page query int false "页码"
+// @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=[]model.Lending}
-// @Router /api/v1/lending/create [post]
+// @Router /lending/listByReader [get]
 func ListLendingByReader(c *gin.Context) {
 	var req struct {
 		BookID int `json:"bookId" binding:"required"`

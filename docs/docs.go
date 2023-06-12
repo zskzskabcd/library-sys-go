@@ -10,13 +10,144 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "wear工程师"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/book/delete": {
+        "/admin/changePassword": {
+            "post": {
+                "description": "管理员修改密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "管理员修改密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "旧密码",
+                        "name": "oldPassword",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "newPassword",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "description": "管理员登录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "管理员登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.LoginResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/book": {
+            "post": {
+                "description": "新书入库 | 更新书籍信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "书籍"
+                ],
+                "summary": "新书入库 | 更新书籍信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "book",
+                        "name": "book",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Book"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "删除书籍",
                 "consumes": [
@@ -55,7 +186,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/book/get": {
+        "/book/get": {
             "get": {
                 "description": "查询书籍详情",
                 "consumes": [
@@ -106,7 +237,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/book/list": {
+        "/book/list": {
             "get": {
                 "description": "查询书籍列表",
                 "consumes": [
@@ -171,48 +302,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/book/save": {
-            "post": {
-                "description": "新书入库 | 更新书籍信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "书籍"
-                ],
-                "summary": "新书入库 | 更新书籍信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Book"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/lend/book": {
+        "/lend/book": {
             "post": {
                 "description": "借书",
                 "consumes": [
@@ -262,63 +352,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/lending/create": {
-            "post": {
-                "description": "借阅记录创建",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "借阅"
-                ],
-                "summary": "借阅记录创建",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "书籍ID",
-                        "name": "bookId",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Lending"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/lending/detail": {
+        "/lending/detail": {
             "get": {
                 "description": "借阅记录详情",
                 "consumes": [
@@ -369,7 +403,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/lending/list": {
+        "/lending/list": {
             "get": {
                 "description": "借阅记录",
                 "consumes": [
@@ -482,9 +516,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/return/book": {
-            "post": {
-                "description": "还书",
+        "/lending/listByReader": {
+            "get": {
+                "description": "读者查询借阅记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -494,7 +528,7 @@ const docTemplate = `{
                 "tags": [
                     "借阅"
                 ],
-                "summary": "还书",
+                "summary": "读者查询借阅记录",
                 "parameters": [
                     {
                         "type": "string",
@@ -511,58 +545,46 @@ const docTemplate = `{
                         "schema": {
                             "type": "integer"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/reader/delete": {
-            "delete": {
-                "description": "删除读者",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "读者"
-                ],
-                "summary": "删除读者",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "读者ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Lending"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
-        "/v1/reader/get": {
+        "/reader": {
             "get": {
                 "description": "查询读者详情",
                 "consumes": [
@@ -611,9 +633,85 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "新增/更新读者信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "读者"
+                ],
+                "summary": "新增/更新读者信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "读者信息",
+                        "name": "reader",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Reader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除读者",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "读者"
+                ],
+                "summary": "删除读者",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "读者ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
             }
         },
-        "/v1/reader/list": {
+        "/reader/list": {
             "get": {
                 "description": "查询读者列表",
                 "consumes": [
@@ -675,7 +773,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reader/login": {
+        "/reader/login": {
             "post": {
                 "description": "读者登陆",
                 "consumes": [
@@ -690,12 +788,21 @@ const docTemplate = `{
                 "summary": "读者登陆",
                 "parameters": [
                     {
-                        "description": "读者信息",
-                        "name": "reader",
+                        "description": "学号",
+                        "name": "studentNo",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Reader"
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "密码",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -711,7 +818,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1.LoginReaderResp"
+                                            "$ref": "#/definitions/v1.LoginResp"
                                         }
                                     }
                                 }
@@ -721,9 +828,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reader/save": {
-            "post": {
-                "description": "新增/更新读者信息",
+        "/reader/password": {
+            "put": {
+                "description": "读者修改密码",
                 "consumes": [
                     "application/json"
                 ],
@@ -733,7 +840,7 @@ const docTemplate = `{
                 "tags": [
                     "读者"
                 ],
-                "summary": "新增/更新读者信息",
+                "summary": "读者修改密码",
                 "parameters": [
                     {
                         "type": "string",
@@ -743,12 +850,21 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "读者信息",
-                        "name": "reader",
+                        "description": "旧密码",
+                        "name": "oldPassword",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Reader"
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "新密码",
+                        "name": "newPassword",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -762,7 +878,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reservation/cancel": {
+        "/reservation/cancel": {
             "post": {
                 "description": "取消预约",
                 "consumes": [
@@ -801,7 +917,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reservation/list": {
+        "/reservation/list": {
             "get": {
                 "description": "获取预约列表",
                 "consumes": [
@@ -911,7 +1027,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reservation/reader/list": {
+        "/reservation/reader/list": {
             "get": {
                 "description": "读者获取预约列表",
                 "consumes": [
@@ -973,7 +1089,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/reservation/save": {
+        "/reservation/save": {
             "post": {
                 "description": "预约",
                 "consumes": [
@@ -1006,6 +1122,47 @@ const docTemplate = `{
                     {
                         "description": "预约时长",
                         "name": "retain",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/return/book": {
+            "post": {
+                "description": "还书",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "借阅"
+                ],
+                "summary": "还书",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "书籍ID",
+                        "name": "bookId",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1283,7 +1440,7 @@ const docTemplate = `{
                 "ReservationStatusCancel"
             ]
         },
-        "v1.LoginReaderResp": {
+        "v1.LoginResp": {
             "type": "object",
             "properties": {
                 "token": {
@@ -1297,12 +1454,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "v1",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "图书管理系统API文档",
+	Description:      "图书管理系统API文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

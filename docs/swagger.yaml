@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   Response:
     properties:
@@ -189,16 +190,77 @@ definitions:
     - ReservationStatusSuccess
     - ReservationStatusTimeout
     - ReservationStatusCancel
-  v1.LoginReaderResp:
+  v1.LoginResp:
     properties:
       token:
         example: xxx
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    name: wear工程师
+  description: 图书管理系统API文档
+  title: 图书管理系统API文档
+  version: v1
 paths:
-  /api/v1/book/delete:
+  /admin/changePassword:
+    post:
+      consumes:
+      - application/json
+      description: 管理员修改密码
+      parameters:
+      - description: 旧密码
+        in: query
+        name: oldPassword
+        required: true
+        type: string
+      - description: 新密码
+        in: query
+        name: newPassword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 管理员修改密码
+      tags:
+      - 管理员
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: 管理员登录
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.LoginResp'
+              type: object
+      summary: 管理员登录
+      tags:
+      - 管理员
+  /book:
     delete:
       consumes:
       - application/json
@@ -224,7 +286,33 @@ paths:
       summary: 删除书籍
       tags:
       - 书籍
-  /api/v1/book/get:
+    post:
+      consumes:
+      - application/json
+      description: 新书入库 | 更新书籍信息
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: book
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/model.Book'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 新书入库 | 更新书籍信息
+      tags:
+      - 书籍
+  /book/get:
     get:
       consumes:
       - application/json
@@ -255,7 +343,7 @@ paths:
       summary: 查询书籍详情
       tags:
       - 书籍
-  /api/v1/book/list:
+  /book/list:
     get:
       consumes:
       - application/json
@@ -295,34 +383,7 @@ paths:
       summary: 查询书籍列表
       tags:
       - 书籍
-  /api/v1/book/save:
-    post:
-      consumes:
-      - application/json
-      description: 新书入库 | 更新书籍信息
-      parameters:
-      - description: token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: book
-        in: body
-        name: book
-        required: true
-        schema:
-          $ref: '#/definitions/model.Book'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Response'
-      summary: 新书入库 | 更新书籍信息
-      tags:
-      - 书籍
-  /api/v1/lend/book:
+  /lend/book:
     post:
       consumes:
       - application/json
@@ -355,41 +416,7 @@ paths:
       summary: 借书
       tags:
       - 借阅
-  /api/v1/lending/create:
-    post:
-      consumes:
-      - application/json
-      description: 借阅记录创建
-      parameters:
-      - description: token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 书籍ID
-        in: body
-        name: bookId
-        required: true
-        schema:
-          type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/model.Lending'
-                  type: array
-              type: object
-      summary: 借阅记录创建
-      tags:
-      - 借阅
-  /api/v1/lending/detail:
+  /lending/detail:
     get:
       consumes:
       - application/json
@@ -420,7 +447,7 @@ paths:
       summary: 借阅记录详情
       tags:
       - 借阅
-  /api/v1/lending/list:
+  /lending/list:
     get:
       consumes:
       - application/json
@@ -492,11 +519,11 @@ paths:
       summary: 借阅记录
       tags:
       - 借阅
-  /api/v1/return/book:
-    post:
+  /lending/listByReader:
+    get:
       consumes:
       - application/json
-      description: 还书
+      description: 读者查询借阅记录
       parameters:
       - description: token
         in: header
@@ -509,17 +536,32 @@ paths:
         required: true
         schema:
           type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Response'
-      summary: 还书
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Lending'
+                  type: array
+              type: object
+      summary: 读者查询借阅记录
       tags:
       - 借阅
-  /v1/reader/delete:
+  /reader:
     delete:
       consumes:
       - application/json
@@ -545,7 +587,6 @@ paths:
       summary: 删除读者
       tags:
       - 读者
-  /v1/reader/get:
     get:
       consumes:
       - application/json
@@ -576,7 +617,33 @@ paths:
       summary: 查询读者详情
       tags:
       - 读者
-  /v1/reader/list:
+    post:
+      consumes:
+      - application/json
+      description: 新增/更新读者信息
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 读者信息
+        in: body
+        name: reader
+        required: true
+        schema:
+          $ref: '#/definitions/model.Reader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 新增/更新读者信息
+      tags:
+      - 读者
+  /reader/list:
     get:
       consumes:
       - application/json
@@ -614,18 +681,24 @@ paths:
       summary: 查询读者列表
       tags:
       - 读者
-  /v1/reader/login:
+  /reader/login:
     post:
       consumes:
       - application/json
       description: 读者登陆
       parameters:
-      - description: 读者信息
+      - description: 学号
         in: body
-        name: reader
+        name: studentNo
         required: true
         schema:
-          $ref: '#/definitions/model.Reader'
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -636,28 +709,34 @@ paths:
             - $ref: '#/definitions/Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1.LoginReaderResp'
+                  $ref: '#/definitions/v1.LoginResp'
               type: object
       summary: 读者登陆
       tags:
       - 读者
-  /v1/reader/save:
-    post:
+  /reader/password:
+    put:
       consumes:
       - application/json
-      description: 新增/更新读者信息
+      description: 读者修改密码
       parameters:
       - description: token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 读者信息
+      - description: 旧密码
         in: body
-        name: reader
+        name: oldPassword
         required: true
         schema:
-          $ref: '#/definitions/model.Reader'
+          type: string
+      - description: 新密码
+        in: body
+        name: newPassword
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -665,10 +744,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Response'
-      summary: 新增/更新读者信息
+      summary: 读者修改密码
       tags:
       - 读者
-  /v1/reservation/cancel:
+  /reservation/cancel:
     post:
       consumes:
       - application/json
@@ -694,7 +773,7 @@ paths:
       summary: 取消预约
       tags:
       - 预约
-  /v1/reservation/list:
+  /reservation/list:
     get:
       consumes:
       - application/json
@@ -764,7 +843,7 @@ paths:
       summary: 获取预约列表
       tags:
       - 预约
-  /v1/reservation/reader/list:
+  /reservation/reader/list:
     get:
       consumes:
       - application/json
@@ -802,7 +881,7 @@ paths:
       summary: 读者获取预约列表
       tags:
       - 预约
-  /v1/reservation/save:
+  /reservation/save:
     post:
       consumes:
       - application/json
@@ -835,4 +914,31 @@ paths:
       summary: 预约
       tags:
       - 预约
+  /return/book:
+    post:
+      consumes:
+      - application/json
+      description: 还书
+      parameters:
+      - description: token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 书籍ID
+        in: body
+        name: bookId
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 还书
+      tags:
+      - 借阅
 swagger: "2.0"

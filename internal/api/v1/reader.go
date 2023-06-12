@@ -18,7 +18,7 @@ import (
 // @Param Authorization header string true "token"
 // @Param reader body model.Reader true "读者信息"
 // @Success 200 {object} resp.Resp
-// @Router /v1/reader/save [post]
+// @Router /reader [post]
 func SaveReader(c *gin.Context) {
 	var reader model.Reader
 	if err := c.ShouldBindJSON(&reader); err != nil {
@@ -42,7 +42,7 @@ func SaveReader(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param id query int true "读者ID"
 // @Success 200 {object} resp.Resp
-// @Router /v1/reader/delete [delete]
+// @Router /reader [delete]
 func DeleteReader(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -71,7 +71,7 @@ func DeleteReader(c *gin.Context) {
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=model.Reader}
-// @Router /v1/reader/list [get]
+// @Router /reader/list [get]
 func ListReader(c *gin.Context) {
 	var req struct {
 		Keyword string `json:"keyword"`
@@ -114,7 +114,7 @@ func ListReader(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param id query int true "读者ID"
 // @Success 200 {object} resp.Resp{data=model.Reader}
-// @Router /v1/reader/get [get]
+// @Router /reader [get]
 func GetReader(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -134,7 +134,7 @@ func GetReader(c *gin.Context) {
 	resp.SuccessData(c, reader)
 }
 
-type LoginReaderResp struct {
+type LoginResp struct {
 	Token string `json:"token" example:"xxx"`
 }
 
@@ -144,9 +144,10 @@ type LoginReaderResp struct {
 // @Tags 读者
 // @Accept json
 // @Produce json
-// @Param reader body model.Reader true "读者信息"
-// @Success 200 {object} resp.Resp{data=LoginReaderResp}
-// @Router /v1/reader/login [post]
+// @Param studentNo body string true "学号"
+// @Param password body string true "密码"
+// @Success 200 {object} resp.Resp{data=LoginResp}
+// @Router /reader/login [post]
 func LoginReader(c *gin.Context) {
 	var req struct {
 		StudentNo string `json:"studentNo" binding:"required"`
@@ -172,7 +173,7 @@ func LoginReader(c *gin.Context) {
 	token, err := middleware.GenerateToken(middleware.UserClaims{
 		ID:       reader.ID,
 		UserName: reader.Name,
-		Role:     "reader",
+		Role:     []middleware.Role{middleware.RoleReader},
 		UserType: "reader",
 	})
 	if err != nil {
@@ -182,4 +183,45 @@ func LoginReader(c *gin.Context) {
 	resp.SuccessData(c, gin.H{
 		"token": token,
 	})
+}
+
+// 读者修改密码 godoc
+// @Summary 读者修改密码
+// @Description 读者修改密码
+// @Tags 读者
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "token"
+// @Param oldPassword body string true "旧密码"
+// @Param newPassword body string true "新密码"
+// @Success 200 {object} resp.Resp
+// @Router /reader/password [put]
+func UpdateReaderPassword(c *gin.Context) {
+	var req struct {
+		OldPassword string `json:"oldPassword" binding:"required"`
+		NewPassword string `json:"newPassword" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
+	}
+	// 获取用户ID
+	user := c.MustGet("user").(middleware.UserClaims)
+	reader := model.Reader{}
+	err := reader.Query().Where("id = ?", user.ID).First(&reader).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	if !reader.ComparePassword(req.OldPassword) {
+		resp.Error(c, resp.CodeInternalServer, "旧密码错误")
+		return
+	}
+	reader.Key = req.NewPassword
+	err = reader.Query().Updates(&reader).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	resp.Success(c)
 }

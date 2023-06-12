@@ -21,14 +21,29 @@ type UserClaims struct {
 	ID       uint   `json:"id"`
 	UserType string `json:"userType"`
 	UserName string `json:"username"`
-	Role     string `json:"role"`
+	Role     []Role `json:"role"`
 }
+
+type Role string
 
 // 角色常量
 const (
-	RoleAdmin  = "admin"
-	RoleReader = "reader"
+	RoleAdmin  Role = "admin"
+	RoleReader Role = "reader"
 )
+
+func (r Role) String() string {
+	return string(r)
+}
+
+func RoleContains(roles []Role, role Role) bool {
+	for _, r := range roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
 
 // GenerateToken 生成 JWT
 func GenerateToken(u UserClaims) (string, error) {
@@ -96,7 +111,7 @@ func LoginAuthMiddleware() gin.HandlerFunc {
 func ReaderAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := c.MustGet("user").(*UserClaims)
-		if user.Role != RoleReader {
+		if !RoleContains(user.Role, RoleReader) {
 			c.AbortWithStatusJSON(403, gin.H{
 				"error": "Forbidden",
 			})
@@ -110,7 +125,7 @@ func ReaderAuthMiddleware() gin.HandlerFunc {
 func AdminAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := c.MustGet("user").(*UserClaims)
-		if user.Role != RoleAdmin {
+		if !RoleContains(user.Role, RoleAdmin) {
 			c.AbortWithStatusJSON(403, gin.H{
 				"error": "Forbidden",
 			})

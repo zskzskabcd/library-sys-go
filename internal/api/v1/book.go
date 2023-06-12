@@ -17,7 +17,7 @@ import (
 // @Param Authorization header string true "token"
 // @Param book body model.Book true "book"
 // @Success 200 {object} resp.Resp
-// @Router /api/v1/book/save [post]
+// @Router /book [post]
 func SaveBook(c *gin.Context) {
 	var book model.Book
 	if err := c.ShouldBindJSON(&book); err != nil {
@@ -41,7 +41,7 @@ func SaveBook(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param id query int true "id"
 // @Success 200 {object} resp.Resp
-// @Router /api/v1/book/delete [delete]
+// @Router /book [delete]
 func DeleteBook(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
@@ -70,7 +70,7 @@ func DeleteBook(c *gin.Context) {
 // @Param page query int false "页码"
 // @Param size query int false "每页条数"
 // @Success 200 {object} resp.Resp{data=[]model.Book}
-// @Router /api/v1/book/list [get]
+// @Router /book/list [get]
 func ListBook(c *gin.Context) {
 	var req struct {
 		Keyword string `json:"keyword"`
@@ -109,7 +109,7 @@ func ListBook(c *gin.Context) {
 // @Param Authorization header string true "token"
 // @Param id query int true "id"
 // @Success 200 {object} resp.Resp{data=model.Book}
-// @Router /api/v1/book/get [get]
+// @Router /book/get [get]
 func GetBook(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required"`
