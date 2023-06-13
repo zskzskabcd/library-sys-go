@@ -19,6 +19,8 @@ func InitRouter() *gin.Engine {
 	// swagger
 	r.GET("/doc/*any", knife4g.Handler(knife4g.Config{RelativePath: "/doc"}))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.URL("/doc/front/docJson")))
+	// static
+	r.Static("/app", "./static")
 	// Common
 	api := r.Group("/api/v1")
 	{
