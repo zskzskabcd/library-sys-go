@@ -46,7 +46,7 @@ func InitRouter() *gin.Engine {
 		// 查询借阅记录
 		reader.GET("/lending/listByReader", v1.ListLendingByReader)
 		// 查询借阅记录详情
-		reader.GET("/lend/record/:id", v1.LendingDetail)
+		reader.GET("/lending/detail", v1.LendingDetail)
 		// 预约
 		reader.POST("/reservation/save", v1.SaveReservation)
 		// 取消预约
@@ -77,8 +77,6 @@ func InitRouter() *gin.Engine {
 		admin.GET("/reader", v1.GetReader)
 		// 查询借阅记录
 		admin.GET("/lending/list", v1.ListLending)
-		// 查询借阅记录详情
-		admin.GET("/lending/detail", v1.LendingDetail)
 		// 查询预约记录
 		admin.GET("/reservation/list", v1.GetReservationList)
 	}
