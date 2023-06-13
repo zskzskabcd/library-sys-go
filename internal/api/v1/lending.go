@@ -24,14 +24,14 @@ import (
 // @Param bookId query int true "书籍ID"
 // @Param days query int true "借阅时长（天）"
 // @Success 200 {object} resp.Resp
-// @Router /lend/book [post]
+// @Router /lending/book [post]
 func LendBook(c *gin.Context) {
 	var req struct {
-		BookID uint `json:"bookId" binding:"required"`
+		BookID uint `json:"bookId" form:"bookId" binding:"required"`
 		// 借阅时长（天）
-		Days int `json:"days" binding:"required"`
+		Days int `json:"days" form:"days" binding:"required"`
 	}
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -90,6 +90,27 @@ func LendBook(c *gin.Context) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
+	// 查询是否有预约
+	reservation := model.Reservation{}
+	reservation.Query().Where("book_id = ? AND reader_id = ?", req.BookID, user.ID).First(&reservation)
+	if reservation.ID != 0 {
+		// 有预约，更新预约状态
+		reservation.Status = model.ReservationStatusSuccess
+		err = tx.Save(&reservation).Error
+		if err != nil {
+			tx.Rollback()
+			resp.Error(c, resp.CodeInternalServer, err.Error())
+			return
+		}
+		// 书籍库存加一
+		err = tx.Model(&book).Update("stock", book.Stock+1).Error
+		if err != nil {
+			tx.Rollback()
+			resp.Error(c, resp.CodeInternalServer, err.Error())
+			return
+		}
+	}
+	// 提交事务
 	tx.Commit()
 	resp.Success(c)
 }
@@ -106,9 +127,9 @@ func LendBook(c *gin.Context) {
 // @Router /return/book [post]
 func ReturnBook(c *gin.Context) {
 	var req struct {
-		BookID int `json:"bookId" binding:"required"`
+		BookID int `json:"bookId" binding:"required" form:"bookId"`
 	}
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -176,20 +197,20 @@ func ReturnBook(c *gin.Context) {
 // @Param to query string false "借阅时间结束"
 // @Param status query int false "状态"
 // @Param page query int false "页码"
-// @Param pageSize query int false "每页数量"
+// @Param size query int false "每页数量"
 // @Success 200 {object} resp.Resp{data=[]model.Lending}
 // @Router /lending/list [get]
 func ListLending(c *gin.Context) {
 	var req struct {
-		ReaderID   int       `json:"readerId"`
-		BookID     int       `json:"bookId"`
-		StudentNo  string    `json:"studentNo"`
-		Phone      string    `json:"phone"`
-		ReaderName string    `json:"readerName"`
-		BookName   string    `json:"bookName"`
-		From       time.Time `json:"from"`
-		To         time.Time `json:"to"`
-		Status     uint8     `json:"status"`
+		ReaderID   int       `json:"readerId" form:"readerId" example:"1"`
+		BookID     int       `json:"bookId" form:"bookId" example:"1"`
+		StudentNo  string    `json:"studentNo" form:"studentNo" example:"201800000000"`
+		Phone      string    `json:"phone" form:"phone" example:"18888888888"`
+		ReaderName string    `json:"readerName" form:"readerName" example:"张三"`
+		BookName   string    `json:"bookName" form:"bookName" example:"三国演义"`
+		From       time.Time `json:"from" form:"from"`
+		To         time.Time `json:"to" form:"to"`
+		Status     uint8     `json:"status" form:"status" example:"1"`
 		api.Pagination
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -231,6 +252,7 @@ func ListLending(c *gin.Context) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
+	query.Preload("Reader").Preload("Book")
 	err = query.Offset(req.Offset()).Limit(req.Limit()).Find(&lendings).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
@@ -251,7 +273,7 @@ func ListLending(c *gin.Context) {
 // @Router /lending/detail [get]
 func LendingDetail(c *gin.Context) {
 	var req struct {
-		LendingID int `json:"lendingId" binding:"required"`
+		LendingID int `json:"lendingId" form:"lendingId" binding:"required"`
 	}
 	// 用户只能查询自己的借阅记录
 	user := c.MustGet("user").(*middleware.UserClaims)
@@ -259,7 +281,7 @@ func LendingDetail(c *gin.Context) {
 	if !middleware.RoleContains(user.Role, middleware.RoleAdmin) {
 		readerID = user.ID
 	}
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -290,22 +312,26 @@ func LendingDetail(c *gin.Context) {
 // @Router /lending/listByReader [get]
 func ListLendingByReader(c *gin.Context) {
 	var req struct {
-		BookID int `json:"bookId" binding:"required"`
+		BookID int `json:"bookId" form:"bookId" example:"1"` // 书籍ID
 		api.Pagination
 	}
 	user := c.MustGet("user").(*middleware.UserClaims)
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
 	lendings := make([]model.Lending, 0)
-	query := model.DB.Model(&model.Lending{}).Where("reader_id = ?", user.ID).Where("book_id = ?", req.BookID)
+	query := model.DB.Model(&model.Lending{}).Where("reader_id = ?", user.ID)
+	if req.BookID != 0 {
+		query = query.Where("book_id = ?", req.BookID)
+	}
 	var total int64
 	err := query.Count(&total).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
+	query.Preload("Reader").Preload("Book")
 	err = query.Offset(req.Offset()).Limit(req.Limit()).Find(&lendings).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())

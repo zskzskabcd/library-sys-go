@@ -9,11 +9,11 @@ import "gorm.io/gorm"
 
 type Reservation struct {
 	Model
-	BookID   uint              `json:"bookId" gorm:"type:int;not null" binding:"required" example:"1"`
+	BookID   uint              `json:"bookId" gorm:"type:int;not null" binding:"required" example:"1"` // 书籍ID
 	Book     Book              `json:"book" gorm:"foreignkey:book_id"`
-	ReaderID uint              `json:"readerId" gorm:"type:int;not null" binding:"required" example:"1" `
+	ReaderID uint              `json:"readerId" gorm:"type:int;not null" binding:"required" example:"1" ` // 读者ID
 	Reader   Reader            `json:"reader" gorm:"foreignkey:reader_id"`
-	Status   ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3,4" enumsdes:"1:进行中,2:已借阅,3:已超时,4:已取消"`
+	Status   ReservationStatus `json:"status" gorm:"type:tinyint;not null" binding:"required" example:"1" enums:"1,2,3,4" enumsdes:"1:进行中,2:已借阅,3:已超时,4:已取消"` // 预约状态
 }
 
 func (r *Reservation) Query() *gorm.DB {
@@ -24,10 +24,10 @@ func (r *Reservation) Query() *gorm.DB {
 type ReservationStatus uint8
 
 const (
-	ReservationStatusPending ReservationStatus = iota + 1
-	ReservationStatusSuccess
-	ReservationStatusTimeout
-	ReservationStatusCancel
+	ReservationStatusPending ReservationStatus = iota + 1 // 进行中
+	ReservationStatusSuccess                              // 已借阅
+	ReservationStatusTimeout                              // 已超时
+	ReservationStatusCancel                               // 已取消
 )
 
 // 预约状态文本

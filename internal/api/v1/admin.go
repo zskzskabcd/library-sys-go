@@ -25,12 +25,12 @@ type AdminLoginReq struct {
 // @Router /admin/login [post]
 func AdminLogin(c *gin.Context) {
 	var req AdminLoginReq
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
 	admin := model.Admin{}
-	err := admin.Query().Where("username = ?", req.Username).First(&admin).Error
+	err := admin.Query().Where("name = ?", req.Username).First(&admin).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, "用户名或密码错误")
 		return

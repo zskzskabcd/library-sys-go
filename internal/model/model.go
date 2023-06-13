@@ -40,9 +40,10 @@ func Migration(db *gorm.DB) {
 }
 
 type Model struct {
-	ID        uint      `gorm:"primarykey" json:"id" example:"1" format:"int64"`
-	CreatedAt time.Time `json:"createdAt" example:"2021-01-01 00:00:00"`
-	UpdatedAt time.Time `json:"updatedAt" example:"2021-01-01 00:00:00"`
+	ID        uint           `gorm:"primarykey" json:"id" example:"1" format:"int64"`                                     // 主键ID
+	CreatedAt time.Time      `json:"createdAt" example:"2023-06-13T19:06:22.514+08:00"`                                   // 创建时间
+	UpdatedAt time.Time      `json:"updatedAt" example:"2023-06-13T19:06:22.514+08:00"`                                   // 更新时间
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt" swaggertype:"string" example:"2023-06-13T19:06:22.514+08:00"` // 删除时间 - 软删除
 }
 
 func (m *Model) Query() *gorm.DB {

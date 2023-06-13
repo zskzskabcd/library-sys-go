@@ -16,35 +16,53 @@ definitions:
   model.Book:
     properties:
       author:
+        description: 作者名
         example: 许式伟
         type: string
       createdAt:
-        example: "2021-01-01 00:00:00"
+        description: 创建时间
+        example: "2023-06-13T19:06:22.514+08:00"
+        type: string
+      deletedAt:
+        description: 删除时间 - 软删除
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
       id:
+        description: 主键ID
         example: 1
         format: int64
         type: integer
+      originStock:
+        description: 原始库存量
+        example: 100
+        type: integer
       price:
+        description: 价格
         example: 99.99
         type: number
       publishDate:
+        description: 出版日期
         example: "2019-01-01"
         type: string
       publisher:
+        description: 出版社
         example: 电子工业出版社
         type: string
       stock:
+        description: 库存量
         example: 100
         type: integer
       summary:
+        description: 书籍简介
         example: Go语言编程是一本介绍Go语言的书籍，内容包括Go语言的基础知识、并发编程、网络编程、Web编程、数据库编程等。
         type: string
       title:
+        description: 书名
         example: Go语言编程
         type: string
       updatedAt:
-        example: "2021-01-01 00:00:00"
+        description: 更新时间
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
     required:
     - author
@@ -60,24 +78,33 @@ definitions:
       book:
         $ref: '#/definitions/model.Book'
       bookId:
+        description: 书籍ID
         example: 1
         type: integer
       createdAt:
-        example: "2021-01-01 00:00:00"
+        description: 创建时间
+        example: "2023-06-13T19:06:22.514+08:00"
+        type: string
+      deletedAt:
+        description: 删除时间 - 软删除
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
       id:
+        description: 主键ID
         example: 1
         format: int64
         type: integer
       lendTime:
+        description: 借出时间
         type: string
       reader:
         $ref: '#/definitions/model.Reader'
       readerId:
+        description: 读者ID
         example: 1
         type: integer
       returnTime:
-        example: "2021-01-01"
+        description: 预期归还时间
         type: string
       status:
         allOf:
@@ -88,7 +115,8 @@ definitions:
         - 3
         example: 1
       updatedAt:
-        example: "2021-01-01 00:00:00"
+        description: 更新时间
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
     required:
     - bookId
@@ -103,6 +131,10 @@ definitions:
     - 2
     - 3
     type: integer
+    x-enum-comments:
+      LendingStatusLending: 借出
+      LendingStatusReturned: 已归还
+      LendingStatusViolation: 违约
     x-enum-varnames:
     - LendingStatusLending
     - LendingStatusReturned
@@ -114,22 +146,32 @@ definitions:
           $ref: '#/definitions/model.Book'
         type: array
       createdAt:
-        example: "2021-01-01 00:00:00"
+        description: 创建时间
+        example: "2023-06-13T19:06:22.514+08:00"
+        type: string
+      deletedAt:
+        description: 删除时间 - 软删除
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
       gender:
+        description: 性别
         example: 男
         type: string
       id:
+        description: 主键ID
         example: 1
         format: int64
         type: integer
       key:
+        description: 密码（哈希值）
         example: "123456"
         type: string
       name:
+        description: 用户名
         example: 张三
         type: string
       phone:
+        description: 手机号码
         example: "18888888888"
         type: string
       reservation:
@@ -137,38 +179,51 @@ definitions:
           $ref: '#/definitions/model.Reservation'
         type: array
       studentNo:
+        description: 学号
         example: 2018000000
+        minimum: 0
         type: integer
       updatedAt:
-        example: "2021-01-01 00:00:00"
+        description: 更新时间
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
     required:
     - gender
     - name
     - phone
+    - studentNo
     type: object
   model.Reservation:
     properties:
       book:
         $ref: '#/definitions/model.Book'
       bookId:
+        description: 书籍ID
         example: 1
         type: integer
       createdAt:
-        example: "2021-01-01 00:00:00"
+        description: 创建时间
+        example: "2023-06-13T19:06:22.514+08:00"
+        type: string
+      deletedAt:
+        description: 删除时间 - 软删除
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
       id:
+        description: 主键ID
         example: 1
         format: int64
         type: integer
       reader:
         $ref: '#/definitions/model.Reader'
       readerId:
+        description: 读者ID
         example: 1
         type: integer
       status:
         allOf:
         - $ref: '#/definitions/model.ReservationStatus'
+        description: 预约状态
         enum:
         - 1
         - 2
@@ -176,7 +231,8 @@ definitions:
         - 4
         example: 1
       updatedAt:
-        example: "2021-01-01 00:00:00"
+        description: 更新时间
+        example: "2023-06-13T19:06:22.514+08:00"
         type: string
     required:
     - bookId
@@ -190,6 +246,11 @@ definitions:
     - 3
     - 4
     type: integer
+    x-enum-comments:
+      ReservationStatusCancel: 已取消
+      ReservationStatusPending: 进行中
+      ReservationStatusSuccess: 已借阅
+      ReservationStatusTimeout: 已超时
     x-enum-varnames:
     - ReservationStatusPending
     - ReservationStatusSuccess
@@ -317,6 +378,10 @@ paths:
         name: id
         required: true
         type: integer
+      - description: 强制删除
+        in: query
+        name: force
+        type: boolean
       produces:
       - application/json
       responses:
@@ -424,7 +489,7 @@ paths:
       summary: 查询书籍列表
       tags:
       - 书籍
-  /lend/book:
+  /lending/book:
     post:
       consumes:
       - application/json
@@ -539,7 +604,7 @@ paths:
         type: integer
       - description: 每页数量
         in: query
-        name: pageSize
+        name: size
         type: integer
       produces:
       - application/json
@@ -762,7 +827,7 @@ paths:
       tags:
       - 读者
   /reader/password:
-    put:
+    post:
       consumes:
       - application/json
       description: 读者修改密码

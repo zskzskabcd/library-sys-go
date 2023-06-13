@@ -91,10 +91,10 @@ func SaveReservation(c *gin.Context) {
 // @Router /reservation/cancel [post]
 func CancelReservation(c *gin.Context) {
 	var req struct {
-		ID int `json:"id" binding:"required"`
+		ID int `json:"id" binding:"required" form:"id"`
 	}
 	user := c.MustGet("user").(*middleware.UserClaims)
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
@@ -161,15 +161,15 @@ func CancelReservation(c *gin.Context) {
 // @Router /reservation/list [get]
 func GetReservationList(c *gin.Context) {
 	var req struct {
-		ReaderID   int       `json:"readerId"`
-		BookID     int       `json:"bookId"`
-		StudentNo  string    `json:"studentNo"`
-		Phone      string    `json:"phone"`
-		ReaderName string    `json:"readerName"`
-		BookName   string    `json:"bookName"`
-		From       time.Time `json:"from"`
-		To         time.Time `json:"to"`
-		Status     uint8     `json:"status"`
+		ReaderID   int       `json:"readerId" form:"readerId"`
+		BookID     int       `json:"bookId" form:"bookId"`
+		StudentNo  string    `json:"studentNo" form:"studentNo"`
+		Phone      string    `json:"phone" form:"phone"`
+		ReaderName string    `json:"readerName" form:"readerName"`
+		BookName   string    `json:"bookName" form:"bookName"`
+		From       time.Time `json:"from" form:"from"`
+		To         time.Time `json:"to" form:"to"`
+		Status     uint8     `json:"status" form:"status"`
 		api.Pagination
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -177,37 +177,37 @@ func GetReservationList(c *gin.Context) {
 		return
 	}
 	reservation := model.Reservation{}
-	query := reservation.Query().Joins("LEFT JOIN reader ON reader.id = reservation.reader_id").Joins("LEFT JOIN book ON book.id = reservation.book_id")
+	query := reservation.Query().Joins("LEFT JOIN readers ON readers.id = reservations.reader_id").Joins("LEFT JOIN books ON books.id = reservations.book_id")
 	if req.ReaderID != 0 {
-		query = query.Where("reservation.reader_id = ?", req.ReaderID)
+		query = query.Where("reader_id = ?", req.ReaderID)
 	}
 	if req.BookID != 0 {
-		query = query.Where("reservation.book_id = ?", req.BookID)
+		query = query.Where("book_id = ?", req.BookID)
 	}
 	if req.StudentNo != "" {
-		query = query.Where("reader.student_no = ?", req.StudentNo)
+		query = query.Where("readers.student_no = ?", req.StudentNo)
 	}
 	if req.Phone != "" {
-		query = query.Where("reader.phone = ?", req.Phone)
+		query = query.Where("readers.phone = ?", req.Phone)
 	}
 	if req.ReaderName != "" {
-		query = query.Where("reader.name = ?", req.ReaderName)
+		query = query.Where("readers.name = ?", req.ReaderName)
 	}
 	if req.BookName != "" {
-		query = query.Where("book.name = ?", req.BookName)
+		query = query.Where("books.name = ?", req.BookName)
 	}
 	if !req.From.IsZero() {
-		query = query.Where("reservation.created_at >= ?", req.From)
+		query = query.Where("created_at >= ?", req.From)
 	}
 	if !req.To.IsZero() {
-		query = query.Where("reservation.created_at <= ?", req.To)
+		query = query.Where("created_at <= ?", req.To)
 	}
 	if req.Status != 0 {
-		query = query.Where("reservation.status = ?", req.Status)
+		query = query.Where("status = ?", req.Status)
 	}
 	var total int64
 	var list []model.Reservation
-	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("reservation.id DESC").Find(&list).Error
+	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("id DESC").Find(&list).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
@@ -230,8 +230,12 @@ func GetReservationList(c *gin.Context) {
 func GetReaderReservationList(c *gin.Context) {
 	user := c.MustGet("user").(*middleware.UserClaims)
 	var req struct {
-		Status uint8 `json:"status"`
+		Status uint8 `json:"status" form:"status"`
 		api.Pagination
+	}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
 	}
 	reservations := []model.Reservation{}
 	query := model.DB.Model(&model.Reservation{})

@@ -24,6 +24,7 @@ func SaveBook(c *gin.Context) {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
+	book.OriginStock = book.Stock
 	err := book.Query().Save(&book).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
@@ -40,18 +41,40 @@ func SaveBook(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "token"
 // @Param id query int true "id"
+// @Param force query bool false "强制删除"
 // @Success 200 {object} resp.Resp
 // @Router /book [delete]
 func DeleteBook(c *gin.Context) {
 	var req struct {
-		ID int `json:"id" binding:"required"`
+		ID    uint `json:"id" binding:"required" query:"id" form:"id"`
+		Force bool `json:"force" query:"force" form:"force"`
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
 	book := model.Book{}
-	err := book.Query().Delete(&book).Error
+	book.ID = req.ID
+	err := book.Query().Find(&book).Error
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	if req.Force {
+		err = book.Query().Delete(&book).Error
+		if err != nil {
+			resp.Error(c, resp.CodeInternalServer, err.Error())
+			return
+		}
+		resp.Success(c)
+	}
+	// 检查剩余库存
+	if book.Stock != book.OriginStock && !req.Force {
+		resp.Error(c, resp.CodeParamsInvalid, "有未还的书籍，不能删除")
+		return
+	}
+	// 软删除
+	err = book.Query().Delete(&book).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
@@ -73,7 +96,7 @@ func DeleteBook(c *gin.Context) {
 // @Router /book/list [get]
 func ListBook(c *gin.Context) {
 	var req struct {
-		Keyword string `json:"keyword"`
+		Keyword string `json:"keyword" form:"keyword"`
 		api.Pagination
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -92,7 +115,7 @@ func ListBook(c *gin.Context) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
-	err = booksQuery.Offset((req.Page - 1) * req.Size).Limit(req.Size).Find(&books).Error
+	err = booksQuery.Offset(req.Offset()).Limit(req.Size).Find(&books).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
@@ -112,7 +135,7 @@ func ListBook(c *gin.Context) {
 // @Router /book/get [get]
 func GetBook(c *gin.Context) {
 	var req struct {
-		ID int `json:"id" binding:"required"`
+		ID int `json:"id" binding:"required" form:"id"`
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())

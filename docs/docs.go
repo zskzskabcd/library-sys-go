@@ -169,6 +169,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "强制删除",
+                        "name": "force",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -297,7 +303,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/lend/book": {
+        "/lending/book": {
             "post": {
                 "description": "借书",
                 "consumes": [
@@ -478,7 +484,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "每页数量",
-                        "name": "pageSize",
+                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -832,7 +838,7 @@ const docTemplate = `{
             }
         },
         "/reader/password": {
-            "put": {
+            "post": {
                 "description": "读者修改密码",
                 "consumes": [
                     "application/json"
@@ -1196,45 +1202,65 @@ const docTemplate = `{
             ],
             "properties": {
                 "author": {
+                    "description": "作者名",
                     "type": "string",
                     "example": "许式伟"
                 },
                 "createdAt": {
+                    "description": "创建时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
+                },
+                "deletedAt": {
+                    "description": "删除时间 - 软删除",
+                    "type": "string",
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 },
                 "id": {
+                    "description": "主键ID",
                     "type": "integer",
                     "format": "int64",
                     "example": 1
                 },
+                "originStock": {
+                    "description": "原始库存量",
+                    "type": "integer",
+                    "example": 100
+                },
                 "price": {
+                    "description": "价格",
                     "type": "number",
                     "example": 99.99
                 },
                 "publishDate": {
+                    "description": "出版日期",
                     "type": "string",
                     "example": "2019-01-01"
                 },
                 "publisher": {
+                    "description": "出版社",
                     "type": "string",
                     "example": "电子工业出版社"
                 },
                 "stock": {
+                    "description": "库存量",
                     "type": "integer",
                     "example": 100
                 },
                 "summary": {
+                    "description": "书籍简介",
                     "type": "string",
                     "example": "Go语言编程是一本介绍Go语言的书籍，内容包括Go语言的基础知识、并发编程、网络编程、Web编程、数据库编程等。"
                 },
                 "title": {
+                    "description": "书名",
                     "type": "string",
                     "example": "Go语言编程"
                 },
                 "updatedAt": {
+                    "description": "更新时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 }
             }
         },
@@ -1252,31 +1278,41 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Book"
                 },
                 "bookId": {
+                    "description": "书籍ID",
                     "type": "integer",
                     "example": 1
                 },
                 "createdAt": {
+                    "description": "创建时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
+                },
+                "deletedAt": {
+                    "description": "删除时间 - 软删除",
+                    "type": "string",
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 },
                 "id": {
+                    "description": "主键ID",
                     "type": "integer",
                     "format": "int64",
                     "example": 1
                 },
                 "lendTime": {
+                    "description": "借出时间",
                     "type": "string"
                 },
                 "reader": {
                     "$ref": "#/definitions/model.Reader"
                 },
                 "readerId": {
+                    "description": "读者ID",
                     "type": "integer",
                     "example": 1
                 },
                 "returnTime": {
-                    "type": "string",
-                    "example": "2021-01-01"
+                    "description": "预期归还时间",
+                    "type": "string"
                 },
                 "status": {
                     "enum": [
@@ -1292,8 +1328,9 @@ const docTemplate = `{
                     "example": 1
                 },
                 "updatedAt": {
+                    "description": "更新时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 }
             }
         },
@@ -1304,6 +1341,11 @@ const docTemplate = `{
                 2,
                 3
             ],
+            "x-enum-comments": {
+                "LendingStatusLending": "借出",
+                "LendingStatusReturned": "已归还",
+                "LendingStatusViolation": "违约"
+            },
             "x-enum-varnames": [
                 "LendingStatusLending",
                 "LendingStatusReturned",
@@ -1315,7 +1357,8 @@ const docTemplate = `{
             "required": [
                 "gender",
                 "name",
-                "phone"
+                "phone",
+                "studentNo"
             ],
             "properties": {
                 "book": {
@@ -1325,27 +1368,38 @@ const docTemplate = `{
                     }
                 },
                 "createdAt": {
+                    "description": "创建时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
+                },
+                "deletedAt": {
+                    "description": "删除时间 - 软删除",
+                    "type": "string",
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 },
                 "gender": {
+                    "description": "性别",
                     "type": "string",
                     "example": "男"
                 },
                 "id": {
+                    "description": "主键ID",
                     "type": "integer",
                     "format": "int64",
                     "example": 1
                 },
                 "key": {
+                    "description": "密码（哈希值）",
                     "type": "string",
                     "example": "123456"
                 },
                 "name": {
+                    "description": "用户名",
                     "type": "string",
                     "example": "张三"
                 },
                 "phone": {
+                    "description": "手机号码",
                     "type": "string",
                     "example": "18888888888"
                 },
@@ -1356,12 +1410,15 @@ const docTemplate = `{
                     }
                 },
                 "studentNo": {
+                    "description": "学号",
                     "type": "integer",
+                    "minimum": 0,
                     "example": 2018000000
                 },
                 "updatedAt": {
+                    "description": "更新时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 }
             }
         },
@@ -1377,14 +1434,22 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Book"
                 },
                 "bookId": {
+                    "description": "书籍ID",
                     "type": "integer",
                     "example": 1
                 },
                 "createdAt": {
+                    "description": "创建时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
+                },
+                "deletedAt": {
+                    "description": "删除时间 - 软删除",
+                    "type": "string",
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 },
                 "id": {
+                    "description": "主键ID",
                     "type": "integer",
                     "format": "int64",
                     "example": 1
@@ -1393,10 +1458,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Reader"
                 },
                 "readerId": {
+                    "description": "读者ID",
                     "type": "integer",
                     "example": 1
                 },
                 "status": {
+                    "description": "预约状态",
                     "enum": [
                         1,
                         2,
@@ -1411,8 +1478,9 @@ const docTemplate = `{
                     "example": 1
                 },
                 "updatedAt": {
+                    "description": "更新时间",
                     "type": "string",
-                    "example": "2021-01-01 00:00:00"
+                    "example": "2023-06-13T19:06:22.514+08:00"
                 }
             }
         },
@@ -1424,6 +1492,12 @@ const docTemplate = `{
                 3,
                 4
             ],
+            "x-enum-comments": {
+                "ReservationStatusCancel": "已取消",
+                "ReservationStatusPending": "进行中",
+                "ReservationStatusSuccess": "已借阅",
+                "ReservationStatusTimeout": "已超时"
+            },
             "x-enum-varnames": [
                 "ReservationStatusPending",
                 "ReservationStatusSuccess",

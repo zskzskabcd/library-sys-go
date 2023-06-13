@@ -25,6 +25,10 @@ func SaveReader(c *gin.Context) {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
+	// 加密密码
+	if reader.Key != "" {
+		reader.EncryptPassword()
+	}
 	err := reader.Query().Save(&reader).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
@@ -74,7 +78,7 @@ func DeleteReader(c *gin.Context) {
 // @Router /reader/list [get]
 func ListReader(c *gin.Context) {
 	var req struct {
-		Keyword string `json:"keyword"`
+		Keyword string `json:"keyword" form:"keyword"`
 		api.Pagination
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -117,7 +121,7 @@ func ListReader(c *gin.Context) {
 // @Router /reader [get]
 func GetReader(c *gin.Context) {
 	var req struct {
-		ID int `json:"id" binding:"required"`
+		ID int `json:"id" binding:"required" example:"1" form:"id"`
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
@@ -200,7 +204,7 @@ type UpdateReaderPasswordReq struct {
 // @Param Authorization header string true "token"
 // @Param req body UpdateReaderPasswordReq true "读者修改密码信息"
 // @Success 200 {object} resp.Resp
-// @Router /reader/password [put]
+// @Router /reader/password [post]
 func UpdateReaderPassword(c *gin.Context) {
 	var req UpdateReaderPasswordReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -208,7 +212,7 @@ func UpdateReaderPassword(c *gin.Context) {
 		return
 	}
 	// 获取用户ID
-	user := c.MustGet("user").(middleware.UserClaims)
+	user := c.MustGet("user").(*middleware.UserClaims)
 	reader := model.Reader{}
 	err := reader.Query().Where("id = ?", user.ID).First(&reader).Error
 	if err != nil {

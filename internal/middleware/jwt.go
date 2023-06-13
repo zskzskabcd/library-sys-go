@@ -77,12 +77,12 @@ func LoginAuthMiddleware() gin.HandlerFunc {
 			})
 			return
 		}
-		// 去除 Bearer 前缀
-		prefixLen := len("Bearer ")
-		if len(tokenString) > prefixLen && tokenString[:prefixLen] == "Bearer " {
-			tokenString = tokenString[prefixLen:]
-			//log.Info("tokenString", tokenString)
-		}
+		// // 去除 Bearer 前缀
+		// prefixLen := len("Bearer ")
+		// if len(tokenString) > prefixLen && tokenString[:prefixLen] == "Bearer " {
+		// 	tokenString = tokenString[prefixLen:]
+		// 	//log.Info("tokenString", tokenString)
+		// }
 		// 校验 token 是否有效
 		token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -111,7 +111,7 @@ func LoginAuthMiddleware() gin.HandlerFunc {
 func ReaderAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := c.MustGet("user").(*UserClaims)
-		if !RoleContains(user.Role, RoleReader) {
+		if !(RoleContains(user.Role, RoleReader)) {
 			c.AbortWithStatusJSON(403, gin.H{
 				"error": "Forbidden",
 			})
@@ -125,6 +125,7 @@ func ReaderAuthMiddleware() gin.HandlerFunc {
 func AdminAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := c.MustGet("user").(*UserClaims)
+		fmt.Print(user.Role)
 		if !RoleContains(user.Role, RoleAdmin) {
 			c.AbortWithStatusJSON(403, gin.H{
 				"error": "Forbidden",

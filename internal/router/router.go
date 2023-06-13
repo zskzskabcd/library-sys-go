@@ -31,10 +31,15 @@ func InitRouter() *gin.Engine {
 		api.POST("/reader/login", v1.LoginReader)
 		// 管理员登陆
 		api.POST("/admin/login", v1.AdminLogin)
+		// 查询书籍详情
+		api.GET("/book/get", v1.GetBook)
+		// 查询书籍列表
+		api.GET("/book/list", v1.ListBook)
 	}
 	// 需要登陆
 	api.Use(middleware.LoginAuthMiddleware())
-	reader := api.Use(middleware.ReaderAuthMiddleware())
+	reader := api.Group("/")
+	reader.Use(middleware.ReaderAuthMiddleware())
 	// Reader
 	{
 		// 读者修改密码
@@ -53,13 +58,9 @@ func InitRouter() *gin.Engine {
 		reader.POST("/reservation/cancel", v1.CancelReservation)
 		// 查询预约记录 读者
 		reader.GET("/reservation/reader/list", v1.GetReaderReservationList)
-		// 查询书籍详情
-		reader.GET("/book/get", v1.GetBook)
-		// 查询书籍列表
-		reader.GET("/book/list", v1.ListBook)
 	}
 	// 管理员
-	admin := api.Use(middleware.AdminAuthMiddleware())
+	admin := api.Group("/").Use(middleware.AdminAuthMiddleware())
 	{
 		// 管理员修改密码
 		admin.POST("/admin/password", v1.AdminChangePassword)
