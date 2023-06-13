@@ -1,3 +1,3 @@
 #!/bin/bash
 
-swag init -d .. -o ../docs
+swag init -d .. -o ../docs --parseDependency --parseInternal
