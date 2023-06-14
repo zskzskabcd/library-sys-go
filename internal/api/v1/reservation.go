@@ -157,7 +157,7 @@ func CancelReservation(c *gin.Context) {
 // @Param status query int false "预约状态"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
-// @Success 200 {object} resp.Resp{data=model.Reservation}
+// @Success 200 {object} resp.RespList[model.Reservation]
 // @Router /reservation/list [get]
 func GetReservationList(c *gin.Context) {
 	var req struct {
@@ -225,7 +225,7 @@ func GetReservationList(c *gin.Context) {
 // @Param status query int false "预约状态"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
-// @Success 200 {object} resp.Resp{data=model.Reservation}
+// @Success 200 {object} resp.RespList[model.Reservation]
 // @Router /reservation/reader/list [get]
 func GetReaderReservationList(c *gin.Context) {
 	user := c.MustGet("user").(*middleware.UserClaims)

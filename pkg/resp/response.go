@@ -31,6 +31,13 @@ type Resp struct {
 	Data interface{} `json:"data"`                  // 返回数据
 } //@name Response
 
+type RespList[T any] struct {
+	Code  int    `json:"code" example:"200"`    // 状态码
+	Msg   string `json:"msg" example:"success"` // 提示信息
+	Data  []T    `json:"data"`                  // 返回数据
+	Count int64  `json:"count" example:"100"`   // 总数
+} //@name ResponseList
+
 // SuccessData 操作成功返回
 func SuccessData(c *gin.Context, data interface{}) {
 	c.JSON(200, gin.H{

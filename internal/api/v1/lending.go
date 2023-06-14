@@ -308,7 +308,7 @@ func LendingDetail(c *gin.Context) {
 // @Param bookId query int true "书籍ID"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
-// @Success 200 {object} resp.Resp{data=[]model.Lending}
+// @Success 200 {object} resp.RespList[model.Lending]
 // @Router /lending/listByReader [get]
 func ListLendingByReader(c *gin.Context) {
 	var req struct {

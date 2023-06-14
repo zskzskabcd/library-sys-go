@@ -74,7 +74,7 @@ func DeleteReader(c *gin.Context) {
 // @Param keyword query string false "关键字"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
-// @Success 200 {object} resp.Resp{data=model.Reader}
+// @Success 200 {object} resp.RespList[model.Reader]
 // @Router /reader/list [get]
 func ListReader(c *gin.Context) {
 	var req struct {

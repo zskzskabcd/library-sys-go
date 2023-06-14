@@ -13,11 +13,95 @@ definitions:
         example: success
         type: string
     type: object
+  ResponseList-model_Book:
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      count:
+        description: 总数
+        example: 100
+        type: integer
+      data:
+        description: 返回数据
+        items:
+          $ref: '#/definitions/model.Book'
+        type: array
+      msg:
+        description: 提示信息
+        example: success
+        type: string
+    type: object
+  ResponseList-model_Lending:
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      count:
+        description: 总数
+        example: 100
+        type: integer
+      data:
+        description: 返回数据
+        items:
+          $ref: '#/definitions/model.Lending'
+        type: array
+      msg:
+        description: 提示信息
+        example: success
+        type: string
+    type: object
+  ResponseList-model_Reader:
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      count:
+        description: 总数
+        example: 100
+        type: integer
+      data:
+        description: 返回数据
+        items:
+          $ref: '#/definitions/model.Reader'
+        type: array
+      msg:
+        description: 提示信息
+        example: success
+        type: string
+    type: object
+  ResponseList-model_Reservation:
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      count:
+        description: 总数
+        example: 100
+        type: integer
+      data:
+        description: 返回数据
+        items:
+          $ref: '#/definitions/model.Reservation'
+        type: array
+      msg:
+        description: 提示信息
+        example: success
+        type: string
+    type: object
   model.Book:
     properties:
       author:
         description: 作者名
         example: 许式伟
+        type: string
+      cover:
+        description: 封面
+        example: https://img3.doubanio.com/view/subject/l/public/s29710665.jpg
         type: string
       createdAt:
         description: 创建时间
@@ -32,6 +116,10 @@ definitions:
         example: 1
         format: int64
         type: integer
+      isbn:
+        description: ISBN
+        example: "9787121324947"
+        type: string
       originStock:
         description: 原始库存量
         example: 100
@@ -66,6 +154,8 @@ definitions:
         type: string
     required:
     - author
+    - cover
+    - isbn
     - price
     - publishDate
     - publisher
@@ -489,6 +579,35 @@ paths:
       summary: 查询书籍列表
       tags:
       - 书籍
+  /book/search:
+    get:
+      consumes:
+      - application/json
+      description: 云搜索书籍
+      parameters:
+      - description: 关键字
+        in: query
+        name: keyword
+        required: true
+        type: string
+      - description: 起始位置
+        in: query
+        name: start
+        type: integer
+      - description: 数量
+        in: query
+        name: count
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ResponseList-model_Book'
+      summary: 云搜索书籍
+      tags:
+      - 书籍
   /lending/book:
     post:
       consumes:
@@ -653,14 +772,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/model.Lending'
-                  type: array
-              type: object
+            $ref: '#/definitions/ResponseList-model_Lending'
       summary: 读者查询借阅记录
       tags:
       - 借阅
@@ -790,12 +902,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Reader'
-              type: object
+            $ref: '#/definitions/ResponseList-model_Reader'
       summary: 查询读者列表
       tags:
       - 读者
@@ -940,12 +1047,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Reservation'
-              type: object
+            $ref: '#/definitions/ResponseList-model_Reservation'
       summary: 获取预约列表
       tags:
       - 预约
@@ -978,12 +1080,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Reservation'
-              type: object
+            $ref: '#/definitions/ResponseList-model_Reservation'
       summary: 读者获取预约列表
       tags:
       - 预约

@@ -3,7 +3,11 @@ package v1
 import (
 	"library-sys-go/internal/api"
 	"library-sys-go/internal/model"
+	"library-sys-go/pkg/douban"
 	"library-sys-go/pkg/resp"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -137,6 +141,7 @@ func GetBook(c *gin.Context) {
 	var req struct {
 		ID int `json:"id" binding:"required" form:"id"`
 	}
+	// type res resp.Resp[model.Book]
 	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
@@ -148,4 +153,53 @@ func GetBook(c *gin.Context) {
 		return
 	}
 	resp.SuccessData(c, book)
+}
+
+// 云搜索书籍 godoc
+// @Summary 云搜索书籍
+// @Description 云搜索书籍
+// @Tags 书籍
+// @Accept json
+// @Produce json
+// @Param keyword query string true "关键字"
+// @Param start query int false "起始位置"
+// @Param count query int false "数量"
+// @Success 200 {object} resp.RespList[model.Book]
+// @Router /book/search [get]
+func SearchBook(c *gin.Context) {
+	req := struct {
+		Keyword string `json:"keyword" form:"keyword"`
+		Start   int    `json:"start" form:"start"`
+		Count   int    `json:"count" form:"count"`
+	}{
+		Start: 0,
+		Count: 10,
+	}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		resp.Error(c, resp.CodeParamsInvalid, err.Error())
+		return
+	}
+	result, err := douban.DouBanSearch(req.Keyword, req.Start, req.Count)
+	if err != nil {
+		resp.Error(c, resp.CodeInternalServer, err.Error())
+		return
+	}
+	books := make([]model.Book, 0)
+
+	for _, item := range result.Books {
+		// 正则匹配价格 38.00元
+		price_str := regexp.MustCompile(`\d+\.\d+`).FindString(item.Price)
+		price, _ := strconv.ParseFloat(price_str, 64)
+		books = append(books, model.Book{
+			Title:       item.Title,
+			Author:      strings.Join(item.Author, ", "),
+			ISBN:        item.Isbn13,
+			Publisher:   item.Publisher,
+			PublishDate: item.Pubdate,
+			Summary:     item.Summary,
+			Cover:       item.Image,
+			Price:       price,
+		})
+	}
+	resp.SuccessList(c, books, int64(result.Total))
 }

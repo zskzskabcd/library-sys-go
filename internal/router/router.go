@@ -37,6 +37,8 @@ func InitRouter() *gin.Engine {
 		api.GET("/book/get", v1.GetBook)
 		// 查询书籍列表
 		api.GET("/book/list", v1.ListBook)
+		// 云搜书
+		api.GET("/book/search", v1.SearchBook)
 	}
 	// 需要登陆
 	api.Use(middleware.LoginAuthMiddleware())

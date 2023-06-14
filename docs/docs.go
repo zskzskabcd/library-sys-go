@@ -303,6 +303,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/book/search": {
+            "get": {
+                "description": "云搜索书籍",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "书籍"
+                ],
+                "summary": "云搜索书籍",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "起始位置",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "数量",
+                        "name": "count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ResponseList-model_Book"
+                        }
+                    }
+                }
+            }
+        },
         "/lending/book": {
             "post": {
                 "description": "借书",
@@ -558,22 +602,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Lending"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/ResponseList-model_Lending"
                         }
                     }
                 }
@@ -773,19 +802,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.Reader"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/ResponseList-model_Reader"
                         }
                     }
                 }
@@ -1009,19 +1026,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.Reservation"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/ResponseList-model_Reservation"
                         }
                     }
                 }
@@ -1071,19 +1076,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.Reservation"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/ResponseList-model_Reservation"
                         }
                     }
                 }
@@ -1189,10 +1182,120 @@ const docTemplate = `{
                 }
             }
         },
+        "ResponseList-model_Book": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 200
+                },
+                "count": {
+                    "description": "总数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "data": {
+                    "description": "返回数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Book"
+                    }
+                },
+                "msg": {
+                    "description": "提示信息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "ResponseList-model_Lending": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 200
+                },
+                "count": {
+                    "description": "总数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "data": {
+                    "description": "返回数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Lending"
+                    }
+                },
+                "msg": {
+                    "description": "提示信息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "ResponseList-model_Reader": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 200
+                },
+                "count": {
+                    "description": "总数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "data": {
+                    "description": "返回数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Reader"
+                    }
+                },
+                "msg": {
+                    "description": "提示信息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "ResponseList-model_Reservation": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 200
+                },
+                "count": {
+                    "description": "总数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "data": {
+                    "description": "返回数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Reservation"
+                    }
+                },
+                "msg": {
+                    "description": "提示信息",
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
         "model.Book": {
             "type": "object",
             "required": [
                 "author",
+                "cover",
+                "isbn",
                 "price",
                 "publishDate",
                 "publisher",
@@ -1205,6 +1308,11 @@ const docTemplate = `{
                     "description": "作者名",
                     "type": "string",
                     "example": "许式伟"
+                },
+                "cover": {
+                    "description": "封面",
+                    "type": "string",
+                    "example": "https://img3.doubanio.com/view/subject/l/public/s29710665.jpg"
                 },
                 "createdAt": {
                     "description": "创建时间",
@@ -1221,6 +1329,11 @@ const docTemplate = `{
                     "type": "integer",
                     "format": "int64",
                     "example": 1
+                },
+                "isbn": {
+                    "description": "ISBN",
+                    "type": "string",
+                    "example": "9787121324947"
                 },
                 "originStock": {
                     "description": "原始库存量",
