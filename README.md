@@ -1,3 +1,3 @@
-# library-sys-go
+# 图书管理系统Golang实现（课设）
 
-golang gin mini starter with gin+gorm+sqlite
+大二数据库课程设计项目，正在开发中...
