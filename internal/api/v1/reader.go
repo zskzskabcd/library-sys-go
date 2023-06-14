@@ -224,6 +224,7 @@ func UpdateReaderPassword(c *gin.Context) {
 		return
 	}
 	reader.Key = req.NewPassword
+	reader.EncryptPassword()
 	err = reader.Query().Updates(&reader).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())

@@ -45,7 +45,7 @@ func SaveReservation(c *gin.Context) {
 	}
 	// 检查该读者是否已经预约过该书
 	reservation := model.Reservation{}
-	err = reservation.Query().Where("reader_id = ? AND book_id = ?", user.ID, req.BookID).First(&reservation).Error
+	err = reservation.Query().Where("reader_id = ? AND book_id = ? AND status = ?", user.ID, req.BookID, model.ReservationStatusPending).First(&reservation).Error
 	if err == nil {
 		resp.Error(c, resp.CodeParamsInvalid, "已经预约过该书了")
 		return
