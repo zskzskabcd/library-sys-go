@@ -51,7 +51,7 @@ func DeleteReader(c *gin.Context) {
 	var req struct {
 		ID uint `json:"id" form:"id" query:"id" binding:"required"`
 	}
-	if err := c.ShouldBind(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
