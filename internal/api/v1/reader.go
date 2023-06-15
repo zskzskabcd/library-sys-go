@@ -49,13 +49,14 @@ func SaveReader(c *gin.Context) {
 // @Router /reader [delete]
 func DeleteReader(c *gin.Context) {
 	var req struct {
-		ID int `json:"id" binding:"required"`
+		ID uint `json:"id" form:"id" query:"id" binding:"required"`
 	}
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
 	reader := model.Reader{}
+	reader.ID = uint(req.ID)
 	err := reader.Query().Delete(&reader).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
