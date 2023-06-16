@@ -50,6 +50,6 @@ func (m *Model) Query() *gorm.DB {
 	return DB.Model(m)
 }
 
-func UnscopedQuery() *gorm.DB {
+func UnscopedQuery(db *gorm.DB) *gorm.DB {
 	return DB.Unscoped()
 }
