@@ -49,3 +49,7 @@ type Model struct {
 func (m *Model) Query() *gorm.DB {
 	return DB.Model(m)
 }
+
+func UnscopedQuery() *gorm.DB {
+	return DB.Unscoped()
+}

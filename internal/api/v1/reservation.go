@@ -206,7 +206,8 @@ func GetReservationList(c *gin.Context) {
 		query = query.Where("status = ?", req.Status)
 	}
 	var total int64
-	query.Preload("Book").Preload("Reader")
+	// 查询出删除的项目
+	query.Unscoped().Preload("Reader", model.UnscopedQuery).Preload("Book", model.UnscopedQuery)
 	var list []model.Reservation
 	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("id DESC").Find(&list).Error
 	if err != nil {
@@ -245,7 +246,7 @@ func GetReaderReservationList(c *gin.Context) {
 		query = query.Where("status = ?", req.Status)
 	}
 	var total int64
-	query.Preload("Book").Preload("Reader")
+	query.Preload("Book", model.UnscopedQuery).Preload("Reader", model.UnscopedQuery)
 	err := query.Count(&total).Offset(req.Offset()).Limit(req.Limit()).Order("id DESC").Find(&reservations).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())

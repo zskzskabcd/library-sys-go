@@ -252,7 +252,7 @@ func ListLending(c *gin.Context) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
-	query.Preload("Reader").Preload("Book")
+	query.Preload("Book", model.UnscopedQuery).Preload("Reader", model.UnscopedQuery)
 	err = query.Offset(req.Offset()).Limit(req.Limit()).Find(&lendings).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
@@ -290,7 +290,7 @@ func LendingDetail(c *gin.Context) {
 	if readerID != 0 {
 		query = query.Where("reader_id = ?", readerID)
 	}
-	err := query.Preload("Book").Preload("Reader").First(&lending).Error
+	err := query.Preload("Book", model.UnscopedQuery).Preload("Reader", model.UnscopedQuery).First(&lending).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
@@ -331,7 +331,7 @@ func ListLendingByReader(c *gin.Context) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return
 	}
-	query.Preload("Reader").Preload("Book")
+	query.Preload("Book", model.UnscopedQuery).Preload("Reader", model.UnscopedQuery)
 	err = query.Offset(req.Offset()).Limit(req.Limit()).Find(&lendings).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
