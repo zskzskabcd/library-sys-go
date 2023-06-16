@@ -57,7 +57,7 @@ func LendBook(c *gin.Context) {
 	}
 	// 查询是否已经借阅
 	lending := model.Lending{}
-	err = lending.Query().Where("book_id = ? AND reader_id = ?", req.BookID, user.ID).First(&lending).Error
+	err = lending.Query().Where("book_id = ? AND reader_id = ? AND status = ?", req.BookID, user.ID, model.LendingStatusLending).First(&lending).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		resp.Error(c, resp.CodeInternalServer, err.Error())
 		return

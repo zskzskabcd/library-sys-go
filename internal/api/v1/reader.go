@@ -25,6 +25,10 @@ func SaveReader(c *gin.Context) {
 		resp.Error(c, resp.CodeParamsInvalid, err.Error())
 		return
 	}
+	// 如果key为空
+	if reader.Key == "" {
+		reader.Key = "123456"
+	}
 	// 加密密码
 	if reader.Key != "" {
 		reader.EncryptPassword()
