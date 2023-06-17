@@ -25,7 +25,7 @@ jobs:
       - name: Build binary file
         run: |
           cd hack
-          bash release.sh
+          bash releaser.sh
       - name: Upload artifact
         uses: actions/upload-artifact@master
         with:
