@@ -12,7 +12,6 @@ fi
 # 打包
 mkdir -p ./out
 mkdir -p ./temp
-rm -rf ./out/*
 rm -rf ./temp/*
 
 outName="library_sys_go-${GOOS}-${GOARCH}"
