@@ -41,9 +41,9 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          path: ~/artifact
+          path: artifact
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ~/artifact/*
+          files: artifact/*
           draft: true
