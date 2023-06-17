@@ -3,7 +3,9 @@ name: 最新版
 on:
   push:
     tags-ignore:
-      - "v*"
+      - "v*" # 排除以 v 开头的 tag
+    branches:
+      - main
 
 jobs:
   build:
