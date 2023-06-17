@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  build:
+  release:
     name: Build And Release
     runs-on: ubuntu-latest
     strategy:
@@ -25,31 +25,9 @@ jobs:
       - name: Build binary file
         run: |
           cd hack
-          bash releaser.sh
-      - name: Upload artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: library_sys_go-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz
-          path: hack/out/*.tar.gz
-
-  release:
-    name: Release
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          path: ~/download/artifact
-      - name: Prepare Files
-        run: |
-          cd ~/download/artifact
-          mkdir ~/artifact
-          cp library_sys_go-*/*.tar.gz ~/artifact/
-          ls ~/artifact
+          bash release.sh
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ~/artifact/*
+          files: hack/out/*
           draft: true

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OS_LIST="darwin linux windows"
-ARCH_LIST="amd64 arm64 386"
+ARCH_LIST="amd64 arm64"
 
 for os in $OS_LIST; do
   for arch in $ARCH_LIST; do
