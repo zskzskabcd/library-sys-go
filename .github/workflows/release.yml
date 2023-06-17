@@ -45,6 +45,7 @@ jobs:
       - name: Prepare Files
         run: |
           cd ~/download/artifact
+          mkdir ~/artifact
           mv library_sys_go-*/* ~/artifact
           rm -rf library_sys_go-*
           ls ~/artifact
