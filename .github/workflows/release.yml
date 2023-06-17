@@ -46,8 +46,7 @@ jobs:
         run: |
           cd ~/download/artifact
           mkdir ~/artifact
-          mv library_sys_go-*/* ~/artifact
-          rm -rf library_sys_go-*
+          cp library_sys_go-*/*.tar.gz ~/artifact/
           ls ~/artifact
       - name: Upload Release
         uses: softprops/action-gh-release@v1
