@@ -9,11 +9,6 @@ jobs:
   release:
     name: Build And Release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [linux, windows, darwin]
-        goarch: [amd64, arm64]
-      fail-fast: true
 
     steps:
       - uses: actions/checkout@master
