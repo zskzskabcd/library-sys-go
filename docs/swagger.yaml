@@ -753,10 +753,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 书籍ID
+      - description: 借阅状态
         in: query
-        name: bookId
-        required: true
+        name: status
         type: integer
       - description: 页码
         in: query

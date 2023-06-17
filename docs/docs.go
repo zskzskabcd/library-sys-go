@@ -580,10 +580,9 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "书籍ID",
-                        "name": "bookId",
-                        "in": "query",
-                        "required": true
+                        "description": "借阅状态",
+                        "name": "status",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
