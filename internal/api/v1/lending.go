@@ -305,14 +305,14 @@ func LendingDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "token"
-// @Param bookId query int true "书籍ID"
+// @Param status query int false "借阅状态"
 // @Param page query int false "页码"
 // @Param size query int false "每页数量"
 // @Success 200 {object} resp.RespList[model.Lending]
 // @Router /lending/listByReader [get]
 func ListLendingByReader(c *gin.Context) {
 	var req struct {
-		BookID int `json:"bookId" form:"bookId" example:"1"` // 书籍ID
+		Status int `json:"status" form:"status" example:"1"` // 借阅状态
 		api.Pagination
 	}
 	user := c.MustGet("user").(*middleware.UserClaims)
@@ -322,8 +322,8 @@ func ListLendingByReader(c *gin.Context) {
 	}
 	lendings := make([]model.Lending, 0)
 	query := model.DB.Model(&model.Lending{}).Where("reader_id = ?", user.ID)
-	if req.BookID != 0 {
-		query = query.Where("book_id = ?", req.BookID)
+	if req.Status != 0 {
+		query = query.Where("status = ?", req.Status)
 	}
 	var total int64
 	err := query.Count(&total).Error
