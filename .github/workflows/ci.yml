@@ -3,47 +3,9 @@ name: 最新版
 on: [push, pull_request]
 
 jobs:
-  doc:
-    name: Update doc
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          check-latest: true
-          go-version: "1.20"
-      - name: Setup swag
-        run: |
-          go install github.com/swaggo/swag/cmd/swag@latest
-      - name: Update doc
-        run: |
-          cd hack
-          bash doc.sh
-      - name: Check has change
-        id: check
-        run: |
-          git diff --exit-code
-          echo "::save-state name=has_change::false"
-          if [ $? -eq 1 ]; then
-            echo "::save-state name=has_change::true"
-          fi
-      - name: Commit files
-        if: steps.check.outputs.has_change == 'true'
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "doc: 更新文档"
-      - name: Push to github
-        if: steps.check.outputs.has_change == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
   build:
     name: Build binary CI
     runs-on: ubuntu-latest
-    needs: doc
     strategy:
       matrix:
         goos: [linux, windows]
