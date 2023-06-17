@@ -99,7 +99,7 @@ func CancelReservation(c *gin.Context) {
 		return
 	}
 	reservation := model.Reservation{}
-	err := reservation.Query().Where("id = ?", req.ID).Where("reader_id = ?", user.ID).First(&reservation).Error
+	err := reservation.Query().Where("id = ?", req.ID).Where("reader_id = ? AND status = ?", user.ID, model.ReservationStatusPending).First(&reservation).Error
 	if err != nil {
 		resp.Error(c, resp.CodeInternalServer, "该预约不存在")
 		return
