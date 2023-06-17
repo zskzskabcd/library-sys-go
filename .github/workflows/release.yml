@@ -41,9 +41,15 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          path: artifact
+          path: ~/download/artifact
+      - name: Prepare Files
+        run: |
+          cd ~/download/artifact
+          mv library_sys_go-*/* ~/artifact
+          rm -rf library_sys_go-*
+          ls ~/artifact
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/**/*.tar.gz
+          files: ~/artifact/*
           draft: true
