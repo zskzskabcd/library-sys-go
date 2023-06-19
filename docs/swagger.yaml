@@ -153,14 +153,7 @@ definitions:
         example: "2023-06-13T19:06:22.514+08:00"
         type: string
     required:
-    - author
-    - cover
-    - isbn
-    - price
-    - publishDate
-    - publisher
     - stock
-    - summary
     - title
     type: object
   model.Lending:
@@ -231,10 +224,6 @@ definitions:
     - LendingStatusViolation
   model.Reader:
     properties:
-      book:
-        items:
-          $ref: '#/definitions/model.Book'
-        type: array
       createdAt:
         description: 创建时间
         example: "2023-06-13T19:06:22.514+08:00"
@@ -264,10 +253,6 @@ definitions:
         description: 手机号码
         example: "18888888888"
         type: string
-      reservation:
-        items:
-          $ref: '#/definitions/model.Reservation'
-        type: array
       studentNo:
         description: 学号
         example: 2018000000

@@ -22,5 +22,6 @@ fi
 go build -o ./temp/${outName} -trimpath -ldflags="-s -w" ../main.go
 
 cp -r ../docs ./temp/docs
+cp -r ../static ./temp/static
 
 tar -zcvf ./out/${outName}.tar.gz -C ./temp/ .

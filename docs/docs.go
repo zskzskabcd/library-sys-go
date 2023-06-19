@@ -1292,14 +1292,7 @@ const docTemplate = `{
         "model.Book": {
             "type": "object",
             "required": [
-                "author",
-                "cover",
-                "isbn",
-                "price",
-                "publishDate",
-                "publisher",
                 "stock",
-                "summary",
                 "title"
             ],
             "properties": {
@@ -1473,12 +1466,6 @@ const docTemplate = `{
                 "studentNo"
             ],
             "properties": {
-                "book": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Book"
-                    }
-                },
                 "createdAt": {
                     "description": "创建时间",
                     "type": "string",
@@ -1514,12 +1501,6 @@ const docTemplate = `{
                     "description": "手机号码",
                     "type": "string",
                     "example": "18888888888"
-                },
-                "reservation": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Reservation"
-                    }
                 },
                 "studentNo": {
                     "description": "学号",
