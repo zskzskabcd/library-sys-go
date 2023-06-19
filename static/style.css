@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+.header {
+  background-color: #f1f1f1;
+  text-align: center;
+  padding: 15px;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #3d70b2;
+  padding: 10px;
+  /* 添加内边距 */
+}
+
+.nav a {
+  color: white;
+  padding: 10px 20px;
+  /* 修改a标签的内外边距 */
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.nav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+#content {
+  padding: 20px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.form-group {
+  text-align: center;
+}
+
+.input-large {
+  display: inline-block;
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+#book_list {
+  width: 50%;
+  margin: 0 auto;
+}
+
+#reader_list {
+  width: 50%;
+  margin: 0 auto;
+}
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#pagination li {
+  list-style: none;
+  margin: 0 5px;
+}
+
+#pagination li button {
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#pagination li button:hover {
+  background: #eee;
+}
+
+#pagination li.active button {
+  background: #ccc;
+}
+
+.large {
+  width: 400px;
+}
+
+.input-box {
+  width: 400px;
+  padding: 10px;
+  margin-bottom: 20px;
+}

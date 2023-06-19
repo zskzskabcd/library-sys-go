@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
+    <title>管理员图书管理系统</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.fzf404.art/sedom/dist/sedom.min.css"
+    />
+    <script src="https://cdn.fzf404.art/sedom/dist/sedom.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="nav">
+      <a href="#" onclick="loadContent('getNewbook')">新书入库</a>
+      <a href="#" onclick="loadContent('BOOKlist')">查询书籍列表</a>
+      <a href="#" onclick="loadContent('adminReaderInfo')">管理读者信息</a>
+      <a href="#" onclick="loadContent('borrow_list')">获取借阅列表</a>
+      <a href="#" onclick="loadContent('reserve_list')">获取预约列表 </a>
+      <a href="#" onclick="loadContent('change')"> 修改密码 </a>
+      <a href="#" onclick="loadContent('logout')"> 注销 </a>
+    </div>
+    <button class="theme">🌓</button>
+    <div id="content"></div>
+    <div id="result"></div>
+    <script type="module" src="admin_utils.mjs"></script>
+    <script type="module" src="admin_render.mjs"></script>
+    <script type="module" src="admin_api.mjs"></script>
+    <script type="module" src="admin_action.mjs"></script>
+    <script type="module" src="admin_app.mjs"></script>
+    <script>
+      window.onload = function () {
+        loadContent("BOOKlist");
+      };
+    </script>
+  </body>
+</html>

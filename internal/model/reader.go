@@ -14,13 +14,11 @@ import (
 // phone (varchar，手机号码)
 type Reader struct {
 	Model
-	Name        string        `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"张三"`           // 用户名
-	Gender      string        `json:"gender" gorm:"type:varchar(6);not null" binding:"required" example:"男"`            // 性别
-	Phone       string        `json:"phone" gorm:"type:varchar(20);not null" binding:"required" example:"18888888888"`  // 手机号码
-	StudentNo   uint          `json:"studentNo" gorm:"type:int;not null" binding:"required,min=0" example:"2018000000"` // 学号
-	Key         string        `json:"key" gorm:"type:varchar(100);not null" example:"123456"`                           // 密码（哈希值）
-	Books       []Book        `json:"book" gorm:"many2many:reader_book"`
-	Reservation []Reservation `json:"reservation" gorm:"foreignkey:reader_id"`
+	Name      string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"张三"`           // 用户名
+	Gender    string `json:"gender" gorm:"type:varchar(6);not null" binding:"required" example:"男"`            // 性别
+	Phone     string `json:"phone" gorm:"type:varchar(20);not null" binding:"required" example:"18888888888"`  // 手机号码
+	StudentNo uint   `json:"studentNo" gorm:"type:int;not null" binding:"required,min=0" example:"2018000000"` // 学号
+	Key       string `json:"key" gorm:"type:varchar(100);not null" example:"123456"`                           // 密码（哈希值）
 }
 
 // Query 查询
