@@ -14,8 +14,8 @@ import (
 
 type Admin struct {
 	Model
-	Name     string `json:"name" gorm:"type:varchar(100);not null" binding:"required" example:"admin"` // 管理员用户名
-	Password string `json:"password" gorm:"type:varchar(100);not null"`                                // 密码（哈希值）
+	Name     string `json:"name" gorm:"type:varchar(100);not null;uniqueIndex:idx_name" binding:"required" example:"admin"` // 管理员用户名
+	Password string `json:"password" gorm:"type:varchar(100);not null"`                                                     // 密码（哈希值）
 }
 
 func (m *Admin) Query() *gorm.DB {
